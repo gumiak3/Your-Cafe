@@ -1,6 +1,6 @@
 import ListElement from "./ListElement";
 import { listElementDataLeft, listElementDataRight } from "./ListElement.data";
-export const Navbar = () => {
+export default function Navbar() {
   return (
     <nav className="flex justify-between w-full ml-4" role="navigation">
       <ul className="left-side-nav flex h-full w-full justify-start">
@@ -15,4 +15,4 @@ export const Navbar = () => {
       </ul>
     </nav>
   );
-};
+}

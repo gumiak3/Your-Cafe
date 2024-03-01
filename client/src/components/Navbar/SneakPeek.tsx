@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 interface SneakPeekProps {
   children: string;
 }
-export const SneakPeek: React.FC<SneakPeekProps> = ({ children }) => {
+export default function SneakPeek({ children }: SneakPeekProps) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setTimeout(() => {
@@ -23,4 +23,4 @@ export const SneakPeek: React.FC<SneakPeekProps> = ({ children }) => {
       {children}
     </div>
   );
-};
+}
