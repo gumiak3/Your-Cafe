@@ -19,7 +19,7 @@ export default function ListElement({
 
   return (
     <li
-      className="relative flex justify-center hover:text-white text-gray-300"
+      className="relative flex justify-center hover:text-orange-400 text-black"
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
     >

@@ -1,3 +1,4 @@
 export default function Home() {
-  return <div>Home</div>;
+  return <div className="background-image-w h-90vh">
+  </div>;
 }

@@ -1,4 +1,4 @@
-import { InputType } from "../../types/common";
+import {InputType} from "../../types/common";
 
 export const inputs = [
   {
@@ -6,13 +6,14 @@ export const inputs = [
     id: "email",
     name: "email",
     label: "E-mail",
-    placeholder: "e-mail",
+    placeholder: "E-mail",
   },
   {
     type: InputType.PASSWORD,
     id: "password",
     name: "password",
-    label: "Hasło",
-    placeholder: "hasło",
+    label: "Password",
+    placeholder: "*********",
   },
+
 ];
