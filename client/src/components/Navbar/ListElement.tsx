@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import SneakPeek from "./SneakPeek";
 import { hover } from "@testing-library/user-event/dist/hover";
+import { Link } from "react-router-dom";
 export default function ListElement({
   content,
   href,
@@ -23,9 +24,9 @@ export default function ListElement({
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
     >
-      <a className="px-4 w-full" href={href}>
+      <Link className="px-4 w-full" to={href}>
         {icon ? <FontAwesomeIcon icon={icon} /> : content}
-      </a>
+      </Link>
       {isHovering && hoverSneakPeek ? <SneakPeek>{content}</SneakPeek> : null}
     </li>
   );
