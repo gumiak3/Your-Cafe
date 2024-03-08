@@ -1,4 +1,4 @@
-import Logo from "../pages/Logo";
+import Logo from "./Logo";
 import Navbar from "./Navbar/Navbar";
 import React from "react";
 
