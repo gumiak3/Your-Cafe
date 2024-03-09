@@ -34,6 +34,14 @@ export interface IValiidateForm {
 
 // end of register
 
+// login
+export interface IValiidateLoginForm {
+  [key: string]: boolean;
+  email: boolean;
+  password: boolean;
+}
+// end of login
+
 export enum InputType {
   CHECKBOX = "checkbox",
   EMAIL = "email",

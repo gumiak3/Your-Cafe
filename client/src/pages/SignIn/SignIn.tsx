@@ -1,11 +1,15 @@
 import { inputs } from "./SignIn.data";
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "../../components/Input";
 import Button from "../../components/Button";
-import { ButtonType, InputType } from "../../types/common";
+import { ButtonType, InputType, IValiidateLoginForm } from "../../types/common";
 import InputCheckbox from "../../components/InputCheckbox";
 import { Link } from "react-router-dom";
 export default function SignIn() {
+  const [valids, setValids] = useState<IValiidateLoginForm>({
+    email: true,
+    password: true,
+  });
   function handleClick(e: any) {
     e.preventDefault();
     console.log("Trying to login...");
@@ -16,7 +20,7 @@ export default function SignIn() {
         <h2 className="text-3xl text-center">Welcome back</h2>
         <form className="p-12">
           {inputs.map((input, index) => {
-            return <Input {...input} key={index} />;
+            return <Input {...input} key={index} valid={valids[input.name]} />;
           })}
           <div className="flex justify-between">
             <InputCheckbox

@@ -17,7 +17,6 @@ export default function Register() {
     const values = inputRefs.current.map((input) => input.value);
     return values;
   }
-
   function handleClick(e: any) {
     e.preventDefault();
     const validator = new registerValidator();
@@ -29,6 +28,10 @@ export default function Register() {
       repeatedPassword,
     );
     setValids(valids);
+    if (Object.values(valids).every((valid) => valid)) {
+      console.log("Form is valid");
+      // send data to server
+    }
   }
 
   function addInputRef(ref: HTMLInputElement) {

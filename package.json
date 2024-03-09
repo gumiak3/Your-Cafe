@@ -6,12 +6,13 @@
   "scripts": {
     "install": "cd client && npm install",
     "client": "cd client && npm start",
-    "server": "cd server && npm start"
+    "server": "cd server && nodemon src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "nodemon": "^3.1.0",
     "prettier": "3.2.5",
     "react-router-dom": "^6.22.2"
   },
