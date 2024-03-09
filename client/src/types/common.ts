@@ -14,7 +14,25 @@ export interface InputProps {
   type: string;
   placeholder?: string;
   value?: string;
+  required?: boolean;
+  valid?: boolean;
 }
+
+// register
+export interface RegisterFormProps {
+  email: string;
+  password: string;
+  repeatedPassword: string;
+  username: string;
+}
+export interface IValiidateForm {
+  [key: string]: boolean;
+  email: boolean;
+  password: boolean;
+  username: boolean;
+}
+
+// end of register
 
 export enum InputType {
   CHECKBOX = "checkbox",
