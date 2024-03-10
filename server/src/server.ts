@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { router as authRoute } from "./routes/auth";
+import { db } from "./database";
 const app = express();
 
 app.use(express.json());
