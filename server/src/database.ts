@@ -29,7 +29,7 @@ export class Database {
     });
     connection.connect((err) => {
       if (err) {
-        throw new Error(`Database connection error ${err}`);
+        console.error(err);
       } else {
         console.log(`Connected to database ${process.env.DATABASE}`);
       }
