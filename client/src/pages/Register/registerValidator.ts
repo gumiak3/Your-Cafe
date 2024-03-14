@@ -1,5 +1,5 @@
 import { RegisterFormProps, IValiidateForm } from "../../types/common";
-export class registerValidator {
+export abstract class registerValidator {
   private email: boolean = false;
   private password: boolean = false;
   private username: boolean = false;

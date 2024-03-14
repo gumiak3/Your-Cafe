@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { create } from "domain";
+import { IUser } from "./types/common";
 
 dotenv.config({ path: ".env" });
 
@@ -42,6 +43,29 @@ export class Database {
       return query;
     } catch (err) {
       console.error("xd");
+    }
+  }
+  public async isEmailTaken(email: string): Promise<boolean> {
+    try {
+      const query = `SELECT count(*) as counted FROM Users WHERE email = ?`;
+      const [result] = await this.connection.query(query, email);
+      return result[0].counted > 0;
+    } catch (err) {
+      console.error("Something went wrong with selecting from database");
+    }
+  }
+  public async insertUser(user: IUser) {
+    try {
+      const query = `INSERT INTO Users (email, username, password_hash, type) VALUES (?,?,?, ?)`;
+      const [result] = await this.connection.query(query, [
+        user.email,
+        user.username,
+        user.password,
+        user.type,
+      ]);
+      console.log("Successfully added a user to database");
+    } catch (err) {
+      console.error("something went wrong with inserting data to database");
     }
   }
 }
