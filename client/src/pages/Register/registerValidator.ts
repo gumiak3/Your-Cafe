@@ -1,25 +1,25 @@
 import { RegisterFormProps, IValiidateForm } from "../../types/common";
 export abstract class registerValidator {
-  private email: boolean = false;
-  private password: boolean = false;
-  private username: boolean = false;
+  private static email: boolean = false;
+  private static password: boolean = false;
+  private static username: boolean = false;
   constructor() {}
-  private validateEmail(email: string): boolean {
+  private static validateEmail(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return emailRegex.test(email);
   }
-  private validatePassword(password: string, repeatedPassword: string) {
+  private static validatePassword(password: string, repeatedPassword: string) {
     if (password !== repeatedPassword) {
       return false;
     }
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordRegex.test(password);
   }
-  private validateUsername(username: string) {
+  private static validateUsername(username: string) {
     const usernameRegex = /^[a-zA-Z0-9]{4,19}$/;
     return usernameRegex.test(username);
   }
-  public validateForm(
+  public static validateForm(
     username: string,
     email: string,
     password: string,

@@ -13,24 +13,55 @@ export default function Register() {
     email: true,
     password: true,
   });
+  const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
   function getInputValues() {
     const values = inputRefs.current.map((input) => input.value);
     return values;
   }
-  function handleClick(e: any) {
+  async function handleClick(e: any) {
     e.preventDefault();
-    const validator = new registerValidator();
     const [username, email, password, repeatedPassword] = getInputValues();
-    const valids = validator.validateForm(
+    const valids = registerValidator.validateForm(
       username,
       email,
       password,
       repeatedPassword,
     );
     setValids(valids);
+    setSuccessfullyRegistered(false);
     if (Object.values(valids).every((valid) => valid)) {
-      console.log("Form is valid");
-      // send data to server
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/user/register",
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              email: email,
+              password: password,
+            }),
+          },
+        );
+        if (!response.ok) {
+          throw new Error(`Something went wrong with post`);
+        }
+        const data = await response.json();
+        if (data.isTaken) {
+          // if user is already in database
+          // give specific error on client side
+          console.log(data.isTaken);
+          setValids(data);
+          return;
+        }
+        // everything went ok
+        clearInputs();
+        setSuccessfullyRegistered(true);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -38,6 +69,11 @@ export default function Register() {
     if (ref && !inputRefs.current.includes(ref)) {
       inputRefs.current.push(ref);
     }
+  }
+  function clearInputs() {
+    inputRefs.current.forEach((input) => {
+      input.value = "";
+    });
   }
   return (
     <div className="background-image-w h-screen relative">
@@ -59,6 +95,11 @@ export default function Register() {
             type={ButtonType.SUBMIT}
             handleClick={handleClick}
           />
+          {successfullyRegistered ? (
+            <p className="mt-4 mb-0 text-center text-green-400">
+              Successfully registered!
+            </p>
+          ) : null}
         </form>
       </div>
     </div>

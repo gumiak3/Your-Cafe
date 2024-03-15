@@ -1,7 +1,8 @@
 import express from "express";
-import { RegisterValidator } from "./registerValidator";
+import { RegisterValidator } from "../routes/registerValidator";
 import bcrypt from "bcrypt";
 import { db } from "../server";
+import { User } from "../entities/User";
 
 export const router = express.Router();
 
@@ -16,18 +17,31 @@ export async function hashPassword(password: string, saltRounds: number) {
 }
 router.post("/register", async (req, res) => {
   const validator = new RegisterValidator();
-  const user = {
+  const user = new User({
     username: req.body.username,
     password: req.body.password,
     email: req.body.email,
-    type: "normal",
-  };
-  const isTaken = await db.isEmailTaken(user.email);
-  if (!validator.validateUser(user) || isTaken) {
-    return console.error("User is invalid");
+    type: "client",
+  });
+  // return specific error that includes which input was wrong.
+  user.isValid = validator.validateUser(user.getUserProps());
+  user.isTaken = await db.isEmailTaken(user.email);
+  if (!user.isValid || user.isTaken) {
+    console.error("couldnt add ");
+    return res.send({
+      username: user.isValid.username,
+      email: user.isValid.email,
+      password: user.isValid.password,
+      isTaken: user.isTaken,
+    });
   }
-  const cryptedPassoword = await hashPassword(user.password, 10);
-  user.password = cryptedPassoword;
+
+  user.password = await hashPassword(user.password, 10);
   db.insertUser(user);
-  res.send("Successfully added user");
+  return res.send({
+    username: user.isValid.username,
+    email: user.isValid.email,
+    password: user.isValid.password,
+    isTaken: user.isTaken,
+  });
 });
