@@ -54,7 +54,7 @@ export class Database {
       console.error("Something went wrong with selecting from database");
     }
   }
-  public async insertUser(user: IUser) {
+  public async insertUser(user: IUser): Promise<boolean> {
     try {
       const query = `INSERT INTO Users (email, username, password_hash, type) VALUES (?,?,?, ?)`;
       const [result] = await this.connection.query(query, [
@@ -64,8 +64,10 @@ export class Database {
         user.type,
       ]);
       console.log("Successfully added a user to database");
+      return true;
     } catch (err) {
       console.error("something went wrong with inserting data to database");
+      return false;
     }
   }
 }

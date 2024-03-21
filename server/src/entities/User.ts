@@ -1,5 +1,12 @@
 import { IUser } from "../types/common";
 
+interface IUserToValidate {
+  username: string;
+  password: string;
+  email: string;
+  repeatedPassword: string;
+}
+
 export class User {
   public username: string;
   public password: string;
@@ -13,12 +20,12 @@ export class User {
     this.email = user.email;
     this.type = user.type;
   }
-  public getUserProps(): IUser {
+  public getUserProps(): IUserToValidate {
     return {
       username: this.username,
-      password: this.password,
       email: this.email,
-      type: this.type,
+      password: this.password,
+      repeatedPassword: this.password,
     };
   }
 }

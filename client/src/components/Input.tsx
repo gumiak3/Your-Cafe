@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
-import { InputProps } from "../types/common";
+import { InputProps, validateStatus } from "../types/common";
+
 type Ref = HTMLInputElement;
 
 export const Input = forwardRef<Ref, InputProps>(
@@ -15,7 +16,9 @@ export const Input = forwardRef<Ref, InputProps>(
           className="px-2 py-2 mb-2 border border-slate-300"
           {...rest}
         />
-        {!valid ? <p className="text-red-500 text-sm">Invalid input</p> : null}
+        {valid && valid !== validateStatus.correct ? (
+          <p className="text-red-500">{valid}</p>
+        ) : null}
       </div>
     );
   },

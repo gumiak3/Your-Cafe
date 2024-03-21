@@ -1,17 +1,17 @@
-import { IValidateForm, validateStatus } from "../../types/common";
+import { IValidateForm, validateStatus } from "./common";
 
-export class registerValidator {
-  private static email: validateStatus = validateStatus.emailInvalid;
-  private static password: validateStatus = validateStatus.passwordInvalid;
-  private static username: validateStatus = validateStatus.usernameInvalid;
-  private static validateEmail(email: string): validateStatus {
+export class RegisterValidator {
+  public email: validateStatus = validateStatus.emailInvalid;
+  private password: validateStatus = validateStatus.passwordInvalid;
+  private username: validateStatus = validateStatus.usernameInvalid;
+  private validateEmail(email: string): validateStatus {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (emailRegex.test(email)) {
       return validateStatus.correct;
     }
     return validateStatus.emailInvalid;
   }
-  private static validatePassword(
+  private validatePassword(
     password: string,
     repeatedPassword: string,
   ): validateStatus {
@@ -24,14 +24,26 @@ export class registerValidator {
     }
     return validateStatus.passwordInvalid;
   }
-  private static validateUsername(username: string) {
+  private validateUsername(username: string) {
     const usernameRegex = /^[a-zA-Z0-9]{4,19}$/;
     if (usernameRegex.test(username)) {
       return validateStatus.correct;
     }
     return validateStatus.usernameInvalid;
   }
-  public static validateForm(
+  public emailIsTaken() {
+    this.email = validateStatus.emailTaken;
+    return this.email;
+  }
+  public getValids(): IValidateForm {
+    return {
+      email: this.email,
+      password: this.password,
+      username: this.username,
+      repeatedPassword: this.password,
+    };
+  }
+  public validate(
     username: string,
     email: string,
     password: string,
@@ -40,11 +52,6 @@ export class registerValidator {
     this.email = this.validateEmail(email);
     this.password = this.validatePassword(password, repeatedPassword);
     this.username = this.validateUsername(username);
-    return {
-      email: this.email,
-      password: this.password,
-      username: this.username,
-      repeatedPassword: this.password,
-    };
+    return this.getValids();
   }
 }

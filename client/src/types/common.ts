@@ -15,7 +15,7 @@ export interface InputProps {
   placeholder?: string;
   value?: string;
   required?: boolean;
-  valid?: boolean;
+  valid?: validateStatus;
 }
 
 // register
@@ -25,20 +25,29 @@ export interface RegisterFormProps {
   repeatedPassword: string;
   username: string;
 }
-export interface IValiidateForm {
-  [key: string]: boolean;
-  email: boolean;
-  password: boolean;
-  username: boolean;
+export interface IValidateForm {
+  [key: string]: validateStatus;
+  email: validateStatus;
+  password: validateStatus;
+  username: validateStatus;
+  repeatedPassword: validateStatus;
+}
+export enum validateStatus {
+  correct = 1,
+  emailTaken = "Email is already in use",
+  passwordsAreNotMatched = "Passwords need to match",
+  passwordInvalid = "Invalid Password",
+  usernameInvalid = "Invalid username",
+  emailInvalid = "Email does not match its requirements",
 }
 
 // end of register
 
 // login
 export interface IValiidateLoginForm {
-  [key: string]: boolean;
-  email: boolean;
-  password: boolean;
+  [key: string]: validateStatus;
+  email: validateStatus;
+  password: validateStatus;
 }
 // end of login
 

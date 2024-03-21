@@ -2,13 +2,18 @@ import { inputs } from "./SignIn.data";
 import React, { useState } from "react";
 import { Input } from "../../components/Input";
 import Button from "../../components/Button";
-import { ButtonType, InputType, IValiidateLoginForm } from "../../types/common";
+import {
+  ButtonType,
+  InputType,
+  IValiidateLoginForm,
+  validateStatus,
+} from "../../types/common";
 import InputCheckbox from "../../components/InputCheckbox";
 import { Link } from "react-router-dom";
 export default function SignIn() {
   const [valids, setValids] = useState<IValiidateLoginForm>({
-    email: true,
-    password: true,
+    email: validateStatus.correct,
+    password: validateStatus.correct,
   });
   function handleClick(e: any) {
     e.preventDefault();

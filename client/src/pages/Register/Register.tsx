@@ -3,15 +3,16 @@ import { inputs } from "../Register/Register.data";
 import React, { useRef, useState } from "react";
 import { Input } from "../../components/Input";
 import Button from "../../components/Button";
-import { ButtonType } from "../../types/common";
+import { ButtonType, IValidateForm, validateStatus } from "../../types/common";
 import { registerValidator } from "./registerValidator";
-import { IValiidateForm } from "../../types/common";
+
 export default function Register() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
-  const [valids, setValids] = useState<IValiidateForm>({
-    username: true,
-    email: true,
-    password: true,
+  const [valids, setValids] = useState<IValidateForm>({
+    username: validateStatus.correct,
+    email: validateStatus.correct,
+    password: validateStatus.correct,
+    repeatedPassword: validateStatus.correct,
   });
   const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
   function getInputValues() {
@@ -29,7 +30,10 @@ export default function Register() {
     );
     setValids(valids);
     setSuccessfullyRegistered(false);
-    if (Object.values(valids).every((valid) => valid)) {
+
+    if (
+      Object.values(valids).every((valid) => valid === validateStatus.correct)
+    ) {
       try {
         const response = await fetch(
           "http://localhost:5000/api/user/register",
@@ -49,14 +53,16 @@ export default function Register() {
           throw new Error(`Something went wrong with post`);
         }
         const data = await response.json();
-        if (data.isTaken) {
-          // if user is already in database
-          // give specific error on client side
-          console.log(data.isTaken);
+        if (
+          Object.values(valids).every(
+            (valid) => valid === validateStatus.correct,
+          )
+        ) {
           setValids(data);
+          clearPasswordInputs();
           return;
         }
-        // everything went ok
+        setValids(data);
         clearInputs();
         setSuccessfullyRegistered(true);
       } catch (err) {
@@ -75,6 +81,14 @@ export default function Register() {
       input.value = "";
     });
   }
+  function clearPasswordInputs() {
+    inputRefs.current.forEach((input) => {
+      if (input.name === "password") {
+        input.value = "";
+      }
+    });
+  }
+  console.log(valids);
   return (
     <div className="background-image-w h-screen relative">
       <div className="shadow-around max-w-lg m-auto relative top-20  shadow-2xl bg-white bg-opacity-70 p-6 rounded">

@@ -1,8 +1,9 @@
 import express from "express";
-import { RegisterValidator } from "../routes/registerValidator";
+import { RegisterValidator } from "../../../sharedEntities/registerValidator";
 import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/User";
+import { validateStatus } from "../../../sharedEntities/common";
 
 export const router = express.Router();
 
@@ -24,24 +25,27 @@ router.post("/register", async (req, res) => {
     type: "client",
   });
   // return specific error that includes which input was wrong.
-  user.isValid = validator.validateUser(user.getUserProps());
+  user.isValid = validator.validate(
+    user.username,
+    user.email,
+    user.password,
+    user.password,
+  );
+  // if (
+  //   Object.values(user.isValid).every(
+  //     (valid) => valid !== validateStatus.correct,
+  //   )
+  // ) {
+  //   return validator.getValids();
+  // }
   user.isTaken = await db.isEmailTaken(user.email);
-  if (!user.isValid || user.isTaken) {
-    console.error("couldnt add ");
-    return res.send({
-      username: user.isValid.username,
-      email: user.isValid.email,
-      password: user.isValid.password,
-      isTaken: user.isTaken,
-    });
+  if (user.isTaken) {
+    validator.emailIsTaken();
+    return res.send(validator.getValids());
   }
-
   user.password = await hashPassword(user.password, 10);
-  db.insertUser(user);
-  return res.send({
-    username: user.isValid.username,
-    email: user.isValid.email,
-    password: user.isValid.password,
-    isTaken: user.isTaken,
-  });
+  const success = await db.insertUser(user);
+  if (!success) return;
+  console.log(validator.getValids());
+  return validator.getValids();
 });
