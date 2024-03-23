@@ -37,14 +37,6 @@ export class Database {
     });
     return connection.promise();
   }
-  public async getUsers(): Promise<Object> {
-    try {
-      const query = await this.connection.query("Select * from Users");
-      return query;
-    } catch (err) {
-      console.error("xd");
-    }
-  }
   public async isEmailTaken(email: string): Promise<boolean> {
     try {
       const query = `SELECT count(*) as counted FROM Users WHERE email = ?`;
@@ -67,6 +59,17 @@ export class Database {
       return true;
     } catch (err) {
       console.error("something went wrong with inserting data to database");
+      return false;
+    }
+  }
+  public async getUser(email: string) {
+    try {
+      const query = `SELECT * FROM Users WHERE email = ?`;
+      const [result] = await this.connection.query(query, email);
+      console.log("Successfully fetch user from db");
+      return result[0];
+    } catch (err) {
+      console.error("something went wrong with getting data from database");
       return false;
     }
   }

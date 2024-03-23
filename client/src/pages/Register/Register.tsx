@@ -5,6 +5,7 @@ import { Input } from "../../components/Input";
 import Button from "../../components/Button";
 import { ButtonType, IValidateForm, validateStatus } from "../../types/common";
 import { registerValidator } from "./registerValidator";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -14,6 +15,7 @@ export default function Register() {
     password: validateStatus.correct,
     repeatedPassword: validateStatus.correct,
   });
+  const navigate = useNavigate();
   const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
   function getInputValues() {
     const values = inputRefs.current.map((input) => input.value);
@@ -22,17 +24,19 @@ export default function Register() {
   async function handleClick(e: any) {
     e.preventDefault();
     const [username, email, password, repeatedPassword] = getInputValues();
-    const valids = registerValidator.validateForm(
+    const validatedForm = registerValidator.validateForm(
       username,
       email,
       password,
       repeatedPassword,
     );
-    setValids(valids);
+    setValids(validatedForm);
     setSuccessfullyRegistered(false);
 
     if (
-      Object.values(valids).every((valid) => valid === validateStatus.correct)
+      Object.values(validatedForm).every(
+        (valid) => valid === validateStatus.correct,
+      )
     ) {
       try {
         const response = await fetch(
@@ -54,7 +58,7 @@ export default function Register() {
         }
         const data = await response.json();
         if (
-          Object.values(valids).every(
+          !Object.values(data).every(
             (valid) => valid === validateStatus.correct,
           )
         ) {
@@ -65,6 +69,9 @@ export default function Register() {
         setValids(data);
         clearInputs();
         setSuccessfullyRegistered(true);
+        setTimeout(() => {
+          navigate("/SignIn");
+        }, 1000);
       } catch (err) {
         console.error(err);
       }

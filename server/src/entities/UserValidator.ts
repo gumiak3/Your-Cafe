@@ -1,6 +1,6 @@
-import { IValidateForm, validateStatus } from "./common";
+import { IValidateForm, validateStatus } from "../types/common";
 
-export class RegisterValidator {
+export class UserValidator {
   public email: validateStatus = validateStatus.emailInvalid;
   private password: validateStatus = validateStatus.passwordInvalid;
   private username: validateStatus = validateStatus.usernameInvalid;
