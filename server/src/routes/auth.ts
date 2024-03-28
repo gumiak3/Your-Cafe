@@ -49,19 +49,21 @@ async function comparePasswords(userPassword, dbPassword) {
 }
 
 router.post("/signin", async (req, res) => {
-  const user = new User({
-    username: undefined,
-    password: req.body.password,
-    email: req.body.email,
-    type: undefined,
-  });
+  const email = req.body.email;
+  const password = req.body.password;
   try {
-    const userFetched = await db.getUser(user.email);
+    const user = await db.getUser(email);
     const userCorrectness = await comparePasswords(
-      user.password,
-      userFetched.password_hash,
+      password,
+      user.password_hash,
     );
+    if (!userCorrectness) {
+      throw new Error(`Couldn't find a user`);
+    }
+    delete user.password_hash;
+    return res.send({ isTrue: true, user });
   } catch (err) {
     console.error("something went wrong");
+    return res.send({ isTrue: false });
   }
 });
