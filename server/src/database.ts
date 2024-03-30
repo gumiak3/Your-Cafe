@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { create } from "domain";
-import { IUser } from "./types/common";
+import { DatabaseUser, IUser } from "./types/common";
 
 dotenv.config({ path: ".env" });
 
@@ -67,10 +67,18 @@ export class Database {
       const query = `SELECT * FROM Users WHERE email = ?`;
       const [result] = await this.connection.query(query, email);
       console.log("Successfully fetch user from db");
-      return result[0];
+      return this.parseUser(result[0]);
     } catch (err) {
       console.error("something went wrong with getting data from database");
-      return false;
     }
+  }
+  private parseUser(dbUser: DatabaseUser): IUser {
+    return {
+      id: dbUser.user_id,
+      username: dbUser.username,
+      email: dbUser.email,
+      type: dbUser.type,
+      password: dbUser.password_hash,
+    };
   }
 }
