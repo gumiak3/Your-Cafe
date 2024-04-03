@@ -1,5 +1,5 @@
 import { inputs } from "./SignIn.data";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Input } from "../../components/Input";
 import Button from "../../components/Button";
 import {
@@ -10,14 +10,55 @@ import {
 } from "../../types/common";
 import InputCheckbox from "../../components/InputCheckbox";
 import { Link } from "react-router-dom";
+import { SignInValidator } from "./SignInValidator";
 export default function SignIn() {
+  const inputRefs = useRef<HTMLInputElement[]>([]);
   const [valids, setValids] = useState<IValiidateLoginForm>({
     email: validateStatus.correct,
     password: validateStatus.correct,
   });
-  function handleClick(e: any) {
+
+  function addInputRef(ref: HTMLInputElement) {
+    if (ref && !inputRefs.current.includes(ref)) {
+      inputRefs.current.push(ref);
+    }
+  }
+  async function handleClick(e: any) {
     e.preventDefault();
-    console.log("Trying to login...");
+    const [email, password] = getInputValues();
+    const validatedForm = SignInValidator.validateForm(email, password);
+    console.log(validatedForm);
+    if (
+      Object.values(validatedForm).every(
+        (valid) => valid === validateStatus.correct,
+      )
+    ) {
+      try {
+        const response = await fetch("http://localhost:5000/api/user/signin", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        });
+
+        if (!response.ok) {
+          console.log(response);
+          throw new Error(`Something went wrong with post`);
+        }
+        const data = await response.json();
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+  function getInputValues() {
+    const values = inputRefs.current.map((input) => input.value);
+    return values;
   }
   return (
     <div className="background-image-w h-screen relative">
@@ -25,7 +66,14 @@ export default function SignIn() {
         <h2 className="text-3xl text-center">Welcome back</h2>
         <form className="p-12">
           {inputs.map((input, index) => {
-            return <Input {...input} key={index} valid={valids[input.name]} />;
+            return (
+              <Input
+                {...input}
+                key={index}
+                ref={(ref: HTMLInputElement) => addInputRef(ref)}
+                valid={valids[input.name]}
+              />
+            );
           })}
           <div className="flex justify-between">
             <InputCheckbox

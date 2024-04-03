@@ -3,7 +3,8 @@ import { UserValidator } from "../entities/UserValidator";
 import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/User";
-
+import jwt from "jsonwebtoken";
+import { IUser } from "../types/common";
 export const router = express.Router();
 
 export async function hashPassword(password: string, saltRounds: number) {
@@ -16,6 +17,7 @@ export async function hashPassword(password: string, saltRounds: number) {
 router.post("/register", async (req, res) => {
   const validator = new UserValidator();
   const newUser = new User({
+    id: 0,
     username: req.body.username,
     password: req.body.password,
     email: req.body.email,
@@ -51,19 +53,22 @@ async function comparePasswords(userPassword, dbPassword) {
 router.post("/signin", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  console.log("aha");
   try {
-    const user = await db.getUser(email);
-    const userCorrectness = await comparePasswords(
-      password,
-      user.password_hash,
-    );
-    if (!userCorrectness) {
-      throw new Error(`Couldn't find a user`);
+    const user: IUser = await db.getUser(email);
+    if (!user) {
+      return res.status(401).json({ error: "Authentication failed" });
     }
-    delete user.password_hash;
-    return res.send({ isTrue: true, user });
+    const userCorrectness = await comparePasswords(password, user.password);
+    if (!userCorrectness) {
+      return res.status(401).json({ error: "Authentication failed" });
+    }
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_PRIVATE_KEY, {
+      expiresIn: "3h",
+    });
+    return res.status(200).json({ token });
   } catch (err) {
-    console.error("something went wrong");
-    return res.send({ isTrue: false });
+    console.error("something went wrong" + err);
+    return res.status(500).json({ error: "Login failed" });
   }
 });
