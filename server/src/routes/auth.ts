@@ -5,6 +5,7 @@ import { db } from "../server";
 import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
 import { IUser } from "../types/common";
+
 export const router = express.Router();
 
 export async function hashPassword(password: string, saltRounds: number) {
@@ -55,20 +56,20 @@ router.post("/signin", async (req, res) => {
   const password = req.body.password;
   console.log("aha");
   try {
-    const user: IUser = await db.getUser(email);
+    const user = await db.getUser(email);
     if (!user) {
-      return res.status(401).json({ error: "Authentication failed" });
+      return res.status(401).json({ error: "No match for that user" });
     }
     const userCorrectness = await comparePasswords(password, user.password);
     if (!userCorrectness) {
-      return res.status(401).json({ error: "Authentication failed" });
+      return res.status(401).json({ error: "Invalid password" });
     }
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_PRIVATE_KEY, {
-      expiresIn: "3h",
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1h",
     });
-    return res.status(200).json({ token });
+    return res.status(201).json({ token });
   } catch (err) {
-    console.error("something went wrong" + err);
-    return res.status(500).json({ error: "Login failed" });
+    console.error("something went wrong");
+    return res.status(500).json({ error: "login failed" });
   }
 });

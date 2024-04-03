@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { create } from "domain";
-import { IUser } from "./types/common";
+import { DatabaseUser, IUser } from "./types/common";
 
 dotenv.config({ path: ".env" });
 
@@ -72,7 +72,8 @@ export class Database {
       console.error("something went wrong with getting data from database");
     }
   }
-  private parseUser(dbUser): IUser {
+
+  private parseUser(dbUser: DatabaseUser): IUser {
     return {
       id: dbUser.user_id,
       username: dbUser.username,

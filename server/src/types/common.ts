@@ -20,3 +20,10 @@ export enum validateStatus {
   usernameInvalid = "Invalid username",
   emailInvalid = "Email does not match its requirements",
 }
+export interface DatabaseUser {
+  user_id: number;
+  username: string;
+  email: string;
+  password_hash: string;
+  type: string;
+}
