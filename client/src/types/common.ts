@@ -6,6 +6,11 @@ export interface ListElementProps {
   icon?: IconDefinition;
   hoverSneakPeek: boolean;
 }
+export interface VerticalListElementProps {
+  href: string;
+  content: string;
+  onClick?: () => void;
+}
 
 export interface InputProps {
   id: string;

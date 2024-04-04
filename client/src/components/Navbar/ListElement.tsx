@@ -3,12 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import VerticalNavbar from "./VerticalNavbar";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 export default function ListElement({
   content,
   href,
   icon,
   hoverSneakPeek,
 }: ListElementProps) {
+  const auth = useAuthUser();
+
   const [isHovering, setIsHovering] = useState(false);
   const handleMouseOver = () => {
     setIsHovering(true);
@@ -26,7 +29,7 @@ export default function ListElement({
       <Link className="px-4 w-full" to={href}>
         {icon ? <FontAwesomeIcon icon={icon} /> : content}
       </Link>
-      {isHovering && hoverSneakPeek ? <VerticalNavbar /> : null}
+      {isHovering && hoverSneakPeek && auth ? <VerticalNavbar /> : null}
     </li>
   );
 }
