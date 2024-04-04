@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
-import { IUser } from "../types/common";
 
 export const router = express.Router();
 
@@ -54,7 +53,6 @@ async function comparePasswords(userPassword, dbPassword) {
 router.post("/signin", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log("aha");
   try {
     const user = await db.getUser(email);
     if (!user) {
@@ -67,7 +65,7 @@ router.post("/signin", async (req, res) => {
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1h",
     });
-    return res.status(201).json({ token });
+    return res.status(201).json({ auth: true, token, user });
   } catch (err) {
     console.error("something went wrong");
     return res.status(500).json({ error: "login failed" });
