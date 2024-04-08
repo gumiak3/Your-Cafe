@@ -5,11 +5,9 @@ import Home from "./pages/Home/Home";
 import Header from "./components/Header";
 import Register from "./pages/Register/Register";
 import AuthOutlet from "@auth-kit/react-router/AuthOutlet";
-import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import Booking from "./pages/Booking/Booking";
 
 export default function App() {
-  const auth = useAuthUser();
-
   return (
     <>
       <main className="min-h-screen text-black">
@@ -23,6 +21,8 @@ export default function App() {
           >
             <Route path="/Profile" element={"/Profile"} />
           </Route>
+          <Route path="/booking" element={<Booking />} />
+
           <Route path="/Register" element={<Register />}></Route>
         </Routes>
       </main>

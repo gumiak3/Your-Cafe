@@ -63,6 +63,7 @@ export enum InputType {
   PASSWORD = "password",
   TEXTAREA = "textarea",
   TEXT = "text",
+  TEL = "tel",
 }
 
 export enum ButtonType {
@@ -72,6 +73,12 @@ export enum ButtonType {
 
 export interface ButtonProps {
   type: ButtonType;
-  text: string;
+  extraStyles?: string;
   handleClick?: (e: any) => void;
+  children?: React.ReactNode;
+}
+
+export interface userStateI {
+  username: string;
+  access: string;
 }

@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { SignInValidator } from "./SignInValidator";
 import { useNavigate } from "react-router-dom";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
-import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 export default function SignIn() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const [valids, setValids] = useState<IValiidateLoginForm>({
@@ -22,7 +22,7 @@ export default function SignIn() {
   });
   const signIn = useSignIn();
 
-  const auth = useAuthUser();
+  const isAuthenticated = useIsAuthenticated();
 
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ export default function SignIn() {
     }
   }
   useEffect(() => {
-    if (auth) {
+    if (isAuthenticated) {
       // todo : redirect to profile page
       navigate("/");
     }
@@ -49,7 +49,7 @@ export default function SignIn() {
       )
     ) {
       try {
-        const response = await fetch("http://localhost:5000/api/user/signin", {
+        const response = await fetch("/api/user/signin", {
           method: "post",
           headers: {
             "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export default function SignIn() {
             token: data.token,
             type: "Bearer",
           },
-          userState: { username: data.username, access: data.type },
+          userState: { username: data.user.username, access: data.user.type },
         });
         // make a popup window which will notify a user about successful login in.
         navigate("/");
@@ -110,11 +110,9 @@ export default function SignIn() {
               <Link to="/ResetPassword">Forget password?</Link>
             </p>
           </div>
-          <Button
-            type={ButtonType.SUBMIT}
-            text="Login"
-            handleClick={handleClick}
-          />
+          <Button type={ButtonType.SUBMIT} handleClick={handleClick}>
+            Login
+          </Button>
           <div>
             <Link className="flex justify-center mt-4" to="/Register">
               Don't have an account?<strong className="ml-2"> Register</strong>

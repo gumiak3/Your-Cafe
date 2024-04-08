@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../entities/JWTVerify";
 
 export const router = express.Router();
 
@@ -63,11 +64,33 @@ router.post("/signin", async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
     });
     return res.status(201).json({ auth: true, token, user });
   } catch (err) {
     console.error("something went wrong");
     return res.status(500).json({ error: "login failed" });
   }
+});
+
+router.post("/test", verifyToken, (req, res) => {
+  const data = req.body;
+});
+
+router.post("/refresh-token", (req, res) => {
+  const { token } = req.body;
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid or expired jwt token" });
+    }
+    console.log(decoded);
+    const newToken = jwt.sign(
+      { userId: decoded.id },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1h",
+      },
+    );
+    return res.status(201).json({ auth: true, newToken });
+  });
 });

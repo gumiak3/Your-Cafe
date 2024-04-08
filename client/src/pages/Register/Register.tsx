@@ -39,20 +39,17 @@ export default function Register() {
       )
     ) {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/user/register",
-          {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: username,
-              email: email,
-              password: password,
-            }),
+        const response = await fetch("/api/user/register", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password,
+          }),
+        });
         if (!response.ok) {
           throw new Error(`Something went wrong with post`);
         }
@@ -111,11 +108,9 @@ export default function Register() {
               />
             );
           })}
-          <Button
-            text="Sign Up"
-            type={ButtonType.SUBMIT}
-            handleClick={handleClick}
-          />
+          <Button type={ButtonType.SUBMIT} handleClick={handleClick}>
+            Sign up
+          </Button>
           {successfullyRegistered ? (
             <p className="mt-4 mb-0 text-center text-green-400">
               Successfully registered!
