@@ -36,4 +36,14 @@ export const guestInputs = [
     placeholder: "000000000",
     required: true,
   },
+  {
+    type: InputType.NUMBER,
+    id: "number-of-guests",
+    name: "number-of-guests",
+    label: "Number of guests",
+    placeholder: "Number of guests",
+    required: true,
+    min: 1,
+    max: 10,
+  },
 ];

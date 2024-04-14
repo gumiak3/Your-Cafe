@@ -1,5 +1,6 @@
 import express from "express";
 import { router as authRoute } from "./routes/auth";
+import { router as bookingRoute } from "./routes/bookingTable";
 import { Database } from "./database";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -14,6 +15,7 @@ app.use(
 );
 app.use("/api/user", authRoute);
 app.use(cookieParser());
+app.use("/booking", bookingRoute);
 
 export const db = Database.getInstance();
 

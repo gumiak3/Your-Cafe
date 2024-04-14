@@ -82,4 +82,17 @@ export class Database {
       type: dbUser.type,
     };
   }
+
+  // booking
+
+  public async getOpeningHours() {
+    try {
+      const query = `SELECT day_of_the_week, TIME_FORMAT(opening_time, '%H:%i') as opening_time, TIME_FORMAT(closing_time, '%H:%i') as closing_time FROM Restaurant_open_hours`;
+      const [result] = await this.connection.query(query);
+      console.log(`Successfully fetch opening hours from db`);
+      return result;
+    } catch (err) {
+      console.error("Couldn't fetch a opening hours from database");
+    }
+  }
 }

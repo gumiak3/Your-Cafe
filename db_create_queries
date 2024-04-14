@@ -1,0 +1,20 @@
+use CafeDB;
+
+DROP TABLE Restaurant_open_hours;
+
+CREATE TABLE Restaurant_open_hours(
+	day_of_the_week varchar(30) PRIMARY KEY,
+    opening_time time,
+    closing_time time
+);
+
+INSERT INTO Restaurant_open_hours (day_of_the_week, opening_time, closing_time) VALUES
+("Monday", "8:00", "22:00"),
+("Tuesday", "8:00", "22:00"),
+("Wednesday", "8:00", "22:00"),
+("Thursday", "8:00", "22:00"),
+("Friday", "8:00", "22:00"),
+("Saturday", "9:00", "22:00"),
+("Sunday", "9:00", "21:00");
+
+SELECT * FROM Restaurant_open_hours;
