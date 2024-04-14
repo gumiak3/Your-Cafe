@@ -86,7 +86,7 @@ export default function SignIn() {
 
   return (
     <div className="background-image-w h-screen relative">
-      <div className="shadow-around max-w-lg m-auto relative top-20  shadow-2xl bg-white bg-opacity-70 p-6 rounded">
+      <div className="shadow-around max-w-lg m-auto relative top-20  shadow-2xl bg-white bg-opacity-70 rounded md:px-6 pt-6 ">
         <h2 className="text-3xl text-center">Welcome back</h2>
         <form className="p-12">
           {inputs.map((input, index) => {

@@ -7,7 +7,6 @@
     box-sizing:border-box;
 }
 body{
-    overflow:hidden; /* BE AWARE OF IT */
     margin:0;
     padding:0;
     font-family: "Inter", sans-serif;

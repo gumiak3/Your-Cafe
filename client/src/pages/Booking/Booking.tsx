@@ -2,7 +2,7 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { openHoursType, userStateI } from "../../types/common";
+import { openHoursType, IUserState } from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
@@ -11,7 +11,7 @@ import TimeSelector from "./TimeSelector";
 import { useBookingHours } from "../../hooks/useBookingHours";
 export default function Booking() {
   const isAuth = useIsAuthenticated();
-  const user: userStateI | null = useAuthUser();
+  const user: IUserState | null = useAuthUser();
   const openHours: openHoursType[] = useBookingHours();
   function bookingForm() {
     if (isAuth) {

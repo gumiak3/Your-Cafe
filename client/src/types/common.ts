@@ -78,7 +78,7 @@ export interface ButtonProps {
   children?: React.ReactNode;
 }
 
-export interface userStateI {
+export interface IUserState {
   username: string;
   access: string;
 }
