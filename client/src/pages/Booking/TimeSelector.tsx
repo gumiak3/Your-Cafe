@@ -14,8 +14,9 @@ export default function TimeSelector({ openHours, closeHours }: ITimeSelector) {
   }
   return (
     <div>
-      {getTimeItems().map((item) => (
+      {getTimeItems().map((item, index) => (
         <TimeItem
+          key={index}
           time={{ hour: item.hour, minute: item.minutes }}
           type={item.hour <= 12 ? "am" : "pm"}
         />

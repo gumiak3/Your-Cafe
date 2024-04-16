@@ -44,6 +44,7 @@ export enum validateStatus {
   passwordInvalid = "Invalid Password",
   usernameInvalid = "Invalid username",
   emailInvalid = "Email does not match its requirements",
+  noUserFound = "There is no such user",
 }
 
 // end of register
@@ -86,6 +87,7 @@ export interface IUserState {
 // time selector
 
 export interface ITimeSelector {
+  weekDay: string;
   openHours: {
     hour: number;
     minutes: number;

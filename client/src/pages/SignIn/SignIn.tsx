@@ -31,6 +31,11 @@ export default function SignIn() {
       inputRefs.current.push(ref);
     }
   }
+  function clearInputs() {
+    inputRefs.current.forEach((input) => {
+      input.value = "";
+    });
+  }
   useEffect(() => {
     if (isAuthenticated) {
       // todo : redirect to profile page
@@ -60,8 +65,19 @@ export default function SignIn() {
           }),
         });
         const data = await response.json();
-
         if (!response.ok) {
+          if (data.error === "Invalid password") {
+            setValids({
+              email: validateStatus.correct,
+              password: validateStatus.passwordInvalid,
+            });
+          } else if (data.error === "No match for that user") {
+            setValids({
+              email: validateStatus.noUserFound,
+              password: validateStatus.passwordInvalid,
+            });
+          }
+          clearInputs();
           throw new Error(`Something went wrong with post`);
         }
 

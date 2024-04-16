@@ -2,17 +2,19 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { openHoursType, IUserState } from "../../types/common";
+import { openHoursType, IUserState, ITimeSelector } from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import TimeSelector from "./TimeSelector";
 import { useBookingHours } from "../../hooks/useBookingHours";
+import { useState } from "react";
 export default function Booking() {
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
-  const openHours: openHoursType[] = useBookingHours();
+  const openHours: ITimeSelector[] = useBookingHours();
+  const [weekDayOpenHours, setWeekDayOpenHours] = useState<ITimeSelector>();
   function bookingForm() {
     if (isAuth) {
       return <div>Welcome {user?.username}</div>;
@@ -36,14 +38,14 @@ export default function Booking() {
     return weekdays[day];
   }
   function getWeekDayData(weekDay: string) {
-    return openHours.filter((item) => item.day_of_the_week === weekDay)[0];
+    return openHours.filter((item) => item.weekDay === weekDay)[0];
   }
   function handleDateChange(e: any) {
     const weekDay = convertWeekDayToString(e.$W);
     if (!weekDay) {
       return;
     }
-    console.log(getWeekDayData(weekDay));
+    setWeekDayOpenHours(getWeekDayData(weekDay));
   }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -70,10 +72,13 @@ export default function Booking() {
                 },
               }}
             />
-            {/*<TimeSelector*/}
-            {/*  openHours={{ hour: 9, minutes: 30 }}*/}
-            {/*  closeHours={{ hour: 21, minutes: 30 }}*/}
-            {/*/>*/}
+            {weekDayOpenHours ? (
+              <TimeSelector
+                weekDay={weekDayOpenHours.weekDay}
+                openHours={weekDayOpenHours.openHours}
+                closeHours={weekDayOpenHours.closeHours}
+              />
+            ) : null}
           </form>
         </section>
       </div>
