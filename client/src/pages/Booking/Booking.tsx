@@ -2,19 +2,31 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { openHoursType, IUserState, ITimeSelector } from "../../types/common";
+import { IUserState, ITimeSelector } from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import TimeSelector from "./TimeSelector";
 import { useBookingHours } from "../../hooks/useBookingHours";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 export default function Booking() {
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
   const openHours: ITimeSelector[] = useBookingHours();
   const [weekDayOpenHours, setWeekDayOpenHours] = useState<ITimeSelector>();
+  const dateRef = useRef(null);
+  useEffect(() => {
+    if (weekDayOpenHours === undefined) {
+      const weekDay = convertWeekDayToString(new Date().getDay());
+      if (!weekDay) {
+        return;
+      }
+      console.log(getWeekDayData(weekDay));
+      setWeekDayOpenHours(getWeekDayData(weekDay));
+    }
+  }, [openHours]);
+
   function bookingForm() {
     if (isAuth) {
       return <div>Welcome {user?.username}</div>;
@@ -50,11 +62,12 @@ export default function Booking() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="background-image-w min-h-screen">
-        <section className="shadow-around max-w-lg m-auto relative top-20  shadow-2xl bg-white bg-opacity-70 p-6 rounded">
+        <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-6 rounded">
           <h1 className="text-3xl text-center">Book a table</h1>
           <form className="p-12">
             {bookingForm()}
             <DatePicker
+              ref={dateRef}
               onChange={(e) => handleDateChange(e)}
               disablePast
               label="Date"

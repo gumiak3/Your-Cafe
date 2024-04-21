@@ -39,7 +39,6 @@ export function useBookingHours() {
           throw new Error("Failed to fetch booking hours");
         }
         const data = await response.json();
-        console.log(data);
         setOpenHours(convertToITimeSelectorFormat(data));
       } catch (err) {
         console.error(err);
