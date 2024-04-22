@@ -21,6 +21,7 @@ export interface InputProps {
   value?: string;
   required?: boolean;
   valid?: validateStatus;
+  extraStyles?: string;
 }
 
 // register

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { ITimeSelector } from "../types/common";
 export function useBookingHours() {
   const [openHours, setOpenHours] = useState<ITimeSelector[]>([]);
-
   function convertToITimeSelectorFormat(
     data: {
       closing_time: string;

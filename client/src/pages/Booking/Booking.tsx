@@ -2,7 +2,7 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { IUserState, ITimeSelector } from "../../types/common";
+import { IUserState, ITimeSelector, InputType } from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
@@ -10,10 +10,11 @@ import dayjs from "dayjs";
 import TimeSelector from "./TimeSelector";
 import { useBookingHours } from "../../hooks/useBookingHours";
 import { useEffect, useRef, useState } from "react";
+import { CircularProgress } from "@mui/material";
 export default function Booking() {
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
-  const openHours: ITimeSelector[] = useBookingHours();
+  const openHours = useBookingHours();
   const [weekDayOpenHours, setWeekDayOpenHours] = useState<ITimeSelector>();
   const dateRef = useRef(null);
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Booking() {
       if (!weekDay) {
         return;
       }
-      console.log(getWeekDayData(weekDay));
+
       setWeekDayOpenHours(getWeekDayData(weekDay));
     }
   }, [openHours]);
@@ -64,7 +65,7 @@ export default function Booking() {
       <div className="background-image-w min-h-screen">
         <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-6 rounded">
           <h1 className="text-3xl text-center">Book a table</h1>
-          <form className="p-12">
+          <form className="p-12 flex flex-col">
             {bookingForm()}
             <DatePicker
               ref={dateRef}
@@ -91,7 +92,17 @@ export default function Booking() {
                 openHours={weekDayOpenHours.openHours}
                 closeHours={weekDayOpenHours.closeHours}
               />
-            ) : null}
+            ) : (
+              <div className="w-full flex justify-center mt-4">
+                <CircularProgress color="inherit" />
+              </div>
+            )}
+            <Input
+              name="extra-information"
+              id="extra-information"
+              type={InputType.TEXTAREA}
+              label={"Extra information"}
+            />
           </form>
         </section>
       </div>
