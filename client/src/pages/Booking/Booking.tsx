@@ -2,15 +2,22 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { IUserState, ITimeSelector, InputType } from "../../types/common";
+import {
+  ButtonType,
+  InputType,
+  ITimeSelector,
+  IUserState,
+} from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import TimeSelector from "./TimeSelector";
 import { useBookingHours } from "../../hooks/useBookingHours";
 import { useEffect, useRef, useState } from "react";
 import { CircularProgress } from "@mui/material";
+import Button from "../../components/Button";
+
 export default function Booking() {
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
@@ -27,6 +34,10 @@ export default function Booking() {
       setWeekDayOpenHours(getWeekDayData(weekDay));
     }
   }, [openHours]);
+
+  function handleClick(e: any) {
+    e.preventDefault();
+  }
 
   function bookingForm() {
     if (isAuth) {
@@ -103,6 +114,12 @@ export default function Booking() {
               type={InputType.TEXTAREA}
               label={"Extra information"}
             />
+            <Button
+              type={ButtonType.SUBMIT}
+              handleClick={(e) => handleClick(e)}
+            >
+              Book a table
+            </Button>
           </form>
         </section>
       </div>
