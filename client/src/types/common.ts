@@ -84,30 +84,3 @@ export interface IUserState {
   username: string;
   access: string;
 }
-
-// time selector
-
-export interface ITimeSelector {
-  weekDay: string;
-  openHours: {
-    hour: number;
-    minutes: number;
-  };
-  closeHours: {
-    hour: number;
-    minutes: number;
-  };
-}
-export interface ITimeItem {
-  time: {
-    hour: number;
-    minute: number;
-  };
-  type: "am" | "pm";
-}
-
-export type openHoursType = {
-  day_of_the_week: string;
-  opening_time: string;
-  closing_time: string;
-};

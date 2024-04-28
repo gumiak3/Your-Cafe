@@ -1,12 +1,30 @@
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { ITimeSelector } from "../../types/common";
-import TimeItem from "./TimeItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import TimeItem from "./TimeItem";
 
-export default function TimeSelector({ openHours, closeHours }: ITimeSelector) {
+interface ITimeSelector {
+  date: string;
+  timeStamps: {
+    isBooked: boolean;
+    time: {
+      hour: number;
+      minutes: number;
+    };
+  }[];
+  handleTimeSelect: (time: string) => void;
+}
+export default function TimeSelector({
+  date,
+  timeStamps,
+  handleTimeSelect,
+}: ITimeSelector) {
   const sliderRef = useRef<HTMLUListElement>(null);
+  const [selectedTime, setSelectedTime] = useState<{
+    time: string;
+    index: number;
+  }>();
   function handleRightArrow() {
     if (!sliderRef.current) {
       return;
@@ -22,14 +40,10 @@ export default function TimeSelector({ openHours, closeHours }: ITimeSelector) {
     sliderRef.current.style.scrollBehavior = "smooth";
     sliderRef.current.scrollLeft -= sliderRef.current.offsetWidth;
   }
-
-  function getTimeItems() {
-    const nItems = closeHours.hour - openHours.hour;
-    const items = [];
-    for (let i = 0; i < nItems; i++) {
-      items.push({ hour: openHours.hour + i, minutes: openHours.minutes });
-    }
-    return items;
+  function handleTimePick(time: string, index: number) {
+    console.log(`you picked ${time}`);
+    setSelectedTime({ time: time, index: index });
+    handleTimeSelect(time);
   }
 
   return (
@@ -38,13 +52,18 @@ export default function TimeSelector({ openHours, closeHours }: ITimeSelector) {
         <FontAwesomeIcon icon={faArrowLeft} />
       </button>
       <ul ref={sliderRef} className="flex w-full overflow-hidden gap-3">
-        {getTimeItems().map((item, index) => (
-          <TimeItem
-            key={index}
-            time={{ hour: item.hour, minute: item.minutes }}
-            type={item.hour <= 12 ? "am" : "pm"}
-          />
-        ))}
+        {timeStamps.map((item, index) => {
+          return (
+            <TimeItem
+              isSelected={selectedTime?.index === index}
+              handleTimePick={handleTimePick}
+              key={`timeStamp-${index}`}
+              time={item.time}
+              isBooked={item.isBooked}
+              index={index}
+            />
+          );
+        })}
       </ul>
       <button type="button" onClick={handleRightArrow}>
         <FontAwesomeIcon icon={faArrowRight} />

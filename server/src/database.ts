@@ -1,12 +1,8 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { create } from "domain";
-import {
-  DatabaseUser,
-  IBookingHours,
-  IReservations,
-  IUser,
-} from "./types/common";
+import { DatabaseUser, IUser } from "./types/common";
+import { IBookingHours, IReservations } from "./entities/BookingController";
 
 dotenv.config({ path: ".env" });
 

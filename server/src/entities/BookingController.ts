@@ -1,9 +1,23 @@
-import { IBookingHours, IReservations } from "../types/common";
-
 type IHours = {
   hour: number;
   minutes: number;
 };
+
+export interface IBookingHours {
+  day_of_the_week: string;
+  opening_time: string;
+  closing_time: string;
+}
+
+export interface IReservations {
+  reservation_id: number;
+  user_id: number;
+  number_of_people: number;
+  extra_information: string;
+  status: string;
+  reservation_time: string;
+  reservation_date: Date;
+}
 
 export class BookingController {
   constructor() {}

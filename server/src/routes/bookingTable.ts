@@ -11,9 +11,7 @@ router.post("/booking_hours", async (req, res) => {
   const { date } = req.body;
   const bookingController = new BookingController();
   const dayReservations = await db.getDayReservations(date);
-  // todo: get specific opening_time and closing_time from database for specific day depends on the date which user provided.
-  // todo: convect it into a array of objects {hour: 9:30, isBooked = true/false} for specific day
-  // todo: return it to the user
+
   const weekDay = bookingController.convertWeekDayToString(
     new Date(date).getDay(),
   );
@@ -34,6 +32,5 @@ router.post("/booking_hours", async (req, res) => {
     dbDailyReservations,
   );
 
-  console.log(dbDailyReservations);
-  return res.status(200).json(timeStamps);
+  return res.status(200).json({ date: date, timeStamps });
 });
