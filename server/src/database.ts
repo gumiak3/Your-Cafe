@@ -1,7 +1,12 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { create } from "domain";
-import { DatabaseUser, IUser } from "./types/common";
+import {
+  DatabaseUser,
+  IBookingHours,
+  IReservations,
+  IUser,
+} from "./types/common";
 
 dotenv.config({ path: ".env" });
 
@@ -84,11 +89,30 @@ export class Database {
   }
 
   // booking
-
-  public async getOpeningHours() {
+  public async getDayReservations(date: string) {
     try {
-      const query = `SELECT day_of_the_week, TIME_FORMAT(opening_time, '%H:%i') as opening_time, TIME_FORMAT(closing_time, '%H:%i') as closing_time FROM Restaurant_open_hours`;
-      const [result] = await this.connection.query(query);
+      const query = `SELECT * FROM Reservations WHERE reservation_date = ?`;
+      const [result] = await this.connection.query(query, date);
+      console.log("Successfully fetch reservations from db");
+      return result;
+    } catch (err) {
+      console.error("something went wrong with getting data from database");
+    }
+  }
+  public async getOpeningHours(weekDay: string): Promise<IBookingHours> {
+    try {
+      const query = `SELECT day_of_the_week, TIME_FORMAT(opening_time, '%H:%i') as opening_time, TIME_FORMAT(closing_time, '%H:%i') as closing_time FROM Restaurant_open_hours WHERE day_of_the_week = ?`;
+      const [result] = await this.connection.query(query, weekDay);
+      console.log(`Successfully fetch opening hours from db`);
+      return result[0];
+    } catch (err) {
+      console.error("Couldn't fetch a opening hours from database");
+    }
+  }
+  public async getDailyReservations(date: string): Promise<IReservations[]> {
+    try {
+      const query = `SELECT * FROM Reservations WHERE reservation_date = ?`;
+      const [result] = await this.connection.query(query, date);
       console.log(`Successfully fetch opening hours from db`);
       return result;
     } catch (err) {

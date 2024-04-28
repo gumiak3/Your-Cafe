@@ -1,3 +1,5 @@
+import * as dayjs from "dayjs";
+
 export interface IUser {
   id: number;
   username: string;
@@ -26,4 +28,20 @@ export interface DatabaseUser {
   email: string;
   password_hash: string;
   type: string;
+}
+
+export interface IBookingHours {
+  day_of_the_week: string;
+  opening_time: string;
+  closing_time: string;
+}
+
+export interface IReservations {
+  reservation_id: number;
+  user_id: number;
+  number_of_people: number;
+  extra_information: string;
+  status: string;
+  reservation_time: string;
+  reservation_date: Date;
 }

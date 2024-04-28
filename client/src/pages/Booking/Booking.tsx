@@ -17,34 +17,50 @@ import { useBookingHours } from "../../hooks/useBookingHours";
 import { useEffect, useRef, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import Button from "../../components/Button";
+import { TextArea } from "../../components/TextArea";
 
 export default function Booking() {
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
   const openHours = useBookingHours();
   const [weekDayOpenHours, setWeekDayOpenHours] = useState<ITimeSelector>();
-  const dateRef = useRef(null);
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (weekDayOpenHours === undefined) {
       const weekDay = convertWeekDayToString(new Date().getDay());
       if (!weekDay) {
         return;
       }
-
       setWeekDayOpenHours(getWeekDayData(weekDay));
     }
   }, [openHours]);
 
   function handleClick(e: any) {
     e.preventDefault();
+    if (!inputRefs && !textAreaRef) {
+      return;
+    }
+    console.log(getInputValues(), textAreaRef.current?.value);
   }
-
+  function getInputValues() {
+    return inputRefs.current.map((input) => input.value);
+  }
+  function addInputRef(ref: HTMLInputElement) {
+    if (ref && !inputRefs.current.includes(ref)) {
+      inputRefs.current.push(ref);
+    }
+  }
   function bookingForm() {
     if (isAuth) {
       return <div>Welcome {user?.username}</div>;
     } else {
       return guestInputs.map((element, index) => (
-        <Input {...element} key={index} />
+        <Input
+          {...element}
+          key={index}
+          ref={(ref: HTMLInputElement) => addInputRef(ref)}
+        />
       ));
     }
   }
@@ -61,6 +77,7 @@ export default function Booking() {
     ];
     return weekdays[day];
   }
+
   function getWeekDayData(weekDay: string) {
     return openHours.filter((item) => item.weekDay === weekDay)[0];
   }
@@ -79,11 +96,10 @@ export default function Booking() {
           <form className="p-12 flex flex-col">
             {bookingForm()}
             <DatePicker
-              ref={dateRef}
               onChange={(e) => handleDateChange(e)}
               disablePast
               label="Date"
-              defaultValue={dayjs(new Date())}
+              defaultValue={dayjs(new Date().getDate())}
               slotProps={{
                 textField: {
                   sx: {
@@ -97,18 +113,19 @@ export default function Booking() {
                 },
               }}
             />
-            {weekDayOpenHours ? (
-              <TimeSelector
-                weekDay={weekDayOpenHours.weekDay}
-                openHours={weekDayOpenHours.openHours}
-                closeHours={weekDayOpenHours.closeHours}
-              />
-            ) : (
-              <div className="w-full flex justify-center mt-4">
-                <CircularProgress color="inherit" />
-              </div>
-            )}
-            <Input
+            {/*{weekDayOpenHours ? (*/}
+            {/*  <TimeSelector*/}
+            {/*    weekDay={weekDayOpenHours.weekDay}*/}
+            {/*    openHours={weekDayOpenHours.openHours}*/}
+            {/*    closeHours={weekDayOpenHours.closeHours}*/}
+            {/*  />*/}
+            {/*) : (*/}
+            {/*  <div className="w-full flex justify-center mt-4">*/}
+            {/*    <CircularProgress color="inherit" />*/}
+            {/*  </div>*/}
+            {/*)}*/}
+            <TextArea
+              ref={textAreaRef}
               name="extra-information"
               id="extra-information"
               type={InputType.TEXTAREA}
@@ -126,6 +143,3 @@ export default function Booking() {
     </LocalizationProvider>
   );
 }
-
-/* Because of the structure of the DesktopDatePicker, the `sx` prop needs to be applied to
-the `layout` slot */
