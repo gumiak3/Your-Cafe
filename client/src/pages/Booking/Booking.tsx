@@ -2,7 +2,12 @@ import { guestInputs } from "./Booking.data";
 import { Input } from "../../components/Input";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { ButtonType, InputType, IUserState } from "../../types/common";
+import {
+  ButtonType,
+  InputType,
+  IUserState,
+  validateStatus,
+} from "../../types/common";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -12,6 +17,8 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
+import { BookingValidator } from "./bookingValidator";
+import { number } from "react-admin";
 
 interface IBookingHours {
   date: string;
@@ -23,6 +30,14 @@ interface IBookingHours {
     };
   }[];
 }
+export type validatedBookingForm = {
+  [key: string]: validateStatus;
+  email: validateStatus;
+  username: validateStatus;
+  phoneNumber: validateStatus;
+  numberOfGuests: validateStatus;
+  time: validateStatus;
+};
 
 export default function Booking() {
   const isAuth = useIsAuthenticated();
@@ -31,7 +46,14 @@ export default function Booking() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [pickedDate, setPickedDate] = useState(new Date());
   const [bookingHours, setBookingHours] = useState<IBookingHours>();
-  const selectedTimeRef = useRef<string>();
+  const selectedTimeRef = useRef<string>("");
+  const [valids, setValids] = useState<validatedBookingForm>({
+    email: validateStatus.correct,
+    username: validateStatus.correct,
+    phoneNumber: validateStatus.correct,
+    time: validateStatus.correct,
+    numberOfGuests: validateStatus.correct,
+  });
 
   useEffect(() => {
     async function fetchBookingHours() {
@@ -60,11 +82,25 @@ export default function Booking() {
 
   function handleClick(e: any) {
     e.preventDefault();
-    if (!inputRefs && !textAreaRef) {
+    if (!inputRefs && !textAreaRef && !pickedDate && !selectedTimeRef) {
       return;
     }
-    console.log(getInputValues(), textAreaRef.current?.value);
+    const [username, email, phoneNumber, numberOfGuests, extraInfo] =
+      getInputValues();
+    const time = selectedTimeRef.current;
+    const validator = new BookingValidator();
+    setValids(
+      validator.validateForm(
+        email,
+        username,
+        phoneNumber,
+        Number(numberOfGuests),
+        time,
+      ),
+    );
+    console.log(time);
   }
+
   function getInputValues() {
     return inputRefs.current.map((input) => input.value);
   }
@@ -83,13 +119,13 @@ export default function Booking() {
           {...element}
           key={index}
           ref={(ref: HTMLInputElement) => addInputRef(ref)}
+          valid={valids[element.name]}
         />
       ));
     }
   }
   function handleTimeSelect(selectedTime: string) {
     selectedTimeRef.current = selectedTime;
-    console.log(selectedTimeRef.current);
   }
   async function handleDateChange(e: any) {
     setPickedDate(new Date(e));
@@ -124,6 +160,7 @@ export default function Booking() {
                 handleTimeSelect={handleTimeSelect}
                 date={bookingHours.date}
                 timeStamps={bookingHours.timeStamps}
+                valid={valids.time}
               />
             ) : (
               <div className="w-full flex justify-center mt-4">

@@ -1,8 +1,9 @@
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TimeItem from "./TimeItem";
+import { validateStatus } from "../../types/common";
 
 interface ITimeSelector {
   date: string;
@@ -14,11 +15,13 @@ interface ITimeSelector {
     };
   }[];
   handleTimeSelect: (time: string) => void;
+  valid: validateStatus;
 }
 export default function TimeSelector({
   date,
   timeStamps,
   handleTimeSelect,
+  valid,
 }: ITimeSelector) {
   const sliderRef = useRef<HTMLUListElement>(null);
   const [selectedTime, setSelectedTime] = useState<{
@@ -41,33 +44,37 @@ export default function TimeSelector({
     sliderRef.current.scrollLeft -= sliderRef.current.offsetWidth;
   }
   function handleTimePick(time: string, index: number) {
-    console.log(`you picked ${time}`);
     setSelectedTime({ time: time, index: index });
     handleTimeSelect(time);
   }
 
   return (
-    <div className="flex items-center mt-4 gap-5">
-      <button type="button" onClick={handleLeftArrow}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
-      <ul ref={sliderRef} className="flex w-full overflow-hidden gap-3">
-        {timeStamps.map((item, index) => {
-          return (
-            <TimeItem
-              isSelected={selectedTime?.index === index}
-              handleTimePick={handleTimePick}
-              key={`timeStamp-${index}`}
-              time={item.time}
-              isBooked={item.isBooked}
-              index={index}
-            />
-          );
-        })}
-      </ul>
-      <button type="button" onClick={handleRightArrow}>
-        <FontAwesomeIcon icon={faArrowRight} />
-      </button>
-    </div>
+    <>
+      <div className="flex items-center mt-4 gap-5">
+        <button type="button" onClick={handleLeftArrow}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+        <ul ref={sliderRef} className="flex w-full overflow-hidden gap-3">
+          {timeStamps.map((item, index) => {
+            return (
+              <TimeItem
+                isSelected={selectedTime?.index === index}
+                handleTimePick={handleTimePick}
+                key={`timeStamp-${index}`}
+                time={item.time}
+                isBooked={item.isBooked}
+                index={index}
+              />
+            );
+          })}
+        </ul>
+        <button type="button" onClick={handleRightArrow}>
+          <FontAwesomeIcon icon={faArrowRight} />
+        </button>
+      </div>
+      {valid && valid !== validateStatus.correct ? (
+        <p className="text-red-500">{valid}</p>
+      ) : null}
+    </>
   );
 }

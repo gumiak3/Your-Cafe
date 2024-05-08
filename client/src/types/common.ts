@@ -46,6 +46,9 @@ export enum validateStatus {
   usernameInvalid = "Invalid username",
   emailInvalid = "Email does not match its requirements",
   noUserFound = "There is no such user",
+  phoneNumberInvalid = "Phone number does not match its requirements",
+  numberOfGuests = "Invalid number of guests",
+  timeNotSelected = "You need to select a time",
 }
 
 // end of register
