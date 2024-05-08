@@ -43,9 +43,10 @@ export default function SignIn() {
     }
   });
   async function handleClick(e: any) {
+    const signInValidator = new SignInValidator();
     e.preventDefault();
     const [email, password] = getInputValues();
-    const validatedForm = SignInValidator.validateForm(email, password);
+    const validatedForm = signInValidator.validateForm(email, password);
     setValids(validatedForm);
 
     if (

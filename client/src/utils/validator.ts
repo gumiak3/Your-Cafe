@@ -11,19 +11,6 @@ export class FormValidator {
     }
     return validateStatus.emailInvalid;
   }
-  public validatePassword(
-    password: string,
-    repeatedPassword: string,
-  ): validateStatus {
-    if (password !== repeatedPassword) {
-      return validateStatus.passwordsAreNotMatched;
-    }
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (passwordRegex.test(password)) {
-      return validateStatus.correct;
-    }
-    return validateStatus.passwordInvalid;
-  }
   public validateUsername(username: string) {
     const usernameRegex = /^[a-zA-Z0-9]{4,19}$/;
     if (usernameRegex.test(username)) {

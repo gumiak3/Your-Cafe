@@ -10,7 +10,7 @@ export class BookingValidator extends FormValidator {
     }
     return validateStatus.phoneNumberInvalid;
   }
-  private validateTime(time: string) {
+  private validateEmptyString(time: string) {
     return time !== ""
       ? validateStatus.correct
       : validateStatus.timeNotSelected;
@@ -30,10 +30,10 @@ export class BookingValidator extends FormValidator {
   ): validatedBookingForm {
     return {
       email: this.validateEmail(email),
-      username: this.validateUsername(username),
+      username: this.validateEmptyString(username),
       phoneNumber: this.validatePhoneNumber(phoneNumber),
       numberOfGuests: this.validateNumberOfGuests(numberOfGuests),
-      time: this.validateTime(time),
+      time: this.validateEmptyString(time),
     };
   }
 }
