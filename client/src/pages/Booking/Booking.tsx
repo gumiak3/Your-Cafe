@@ -89,16 +89,28 @@ export default function Booking() {
       getInputValues();
     const time = selectedTimeRef.current;
     const validator = new BookingValidator();
-    setValids(
-      validator.validateForm(
-        email,
-        username,
-        phoneNumber,
-        Number(numberOfGuests),
-        time,
-      ),
+    const isValid = validator.validateForm(
+      email,
+      username,
+      phoneNumber,
+      Number(numberOfGuests),
+      time,
     );
-    console.log(time);
+    setValids(isValid);
+    if (
+      !Object.values(isValid).every((valid) => valid === validateStatus.correct)
+    ) {
+      return;
+    }
+    console.log("Trying to sent data to database...");
+    console.log({
+      username: username,
+      email: email,
+      phoneNumber: phoneNumber,
+      data: pickedDate.toISOString().split("T")[0],
+      time: time,
+      user: isAuth,
+    });
   }
 
   function getInputValues() {
