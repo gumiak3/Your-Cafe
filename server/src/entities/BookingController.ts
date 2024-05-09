@@ -8,6 +8,10 @@ export interface IBookingHours {
   opening_time: string;
   closing_time: string;
 }
+export type timeStamp = {
+  time: { hour: number; minutes: number };
+  isBooked: boolean;
+};
 
 export interface IReservations {
   reservation_id: number;
@@ -77,7 +81,7 @@ export class BookingController {
     return items;
   }
 
-  private convertIntoInterface(time: string) {
+  public convertIntoInterface(time: string) {
     return {
       hour: Number(time?.slice(0, 2)),
       minutes: Number(time?.slice(3, 4)),

@@ -84,10 +84,10 @@ export default function Booking() {
     if (!inputRefs && !textAreaRef && !pickedDate && !selectedTimeRef) {
       return;
     }
-    const [username, email, phoneNumber, numberOfGuests, extraInfo] =
-      getInputValues();
+    const [username, email, phoneNumber, numberOfGuests] = getInputValues();
     const time = selectedTimeRef.current;
     const validator = new BookingValidator();
+    const extraInfo = textAreaRef.current?.value;
     const isValid = validator.validateForm(
       email,
       username,
@@ -109,6 +109,7 @@ export default function Booking() {
       data: pickedDate.toISOString().split("T")[0],
       time: time,
       user: isAuth,
+      extraInfo: extraInfo,
     });
   }
 

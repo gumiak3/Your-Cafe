@@ -49,6 +49,7 @@ export enum validateStatus {
   phoneNumberInvalid = "Phone number does not match its requirements",
   numberOfGuests = "Invalid number of guests",
   timeNotSelected = "You need to select a time",
+  timeInvalid = "Invalid Time",
 }
 
 // end of register

@@ -1,5 +1,5 @@
 import { FormValidator } from "../../utils/validator";
-import { IValidateForm, validateStatus } from "../../types/common";
+import { validateStatus } from "../../types/common";
 import { validatedBookingForm } from "./Booking";
 
 export class BookingValidator extends FormValidator {
