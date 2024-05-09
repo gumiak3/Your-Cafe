@@ -18,7 +18,6 @@ import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
-import { number } from "react-admin";
 
 interface IBookingHours {
   date: string;
