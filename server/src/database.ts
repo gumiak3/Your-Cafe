@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
 import { DatabaseUser, IUser } from "./types/common";
-import { IBookingHours, IReservations } from "./entities/BookingController";
+import {
+  IBookingHours,
+  IReservations,
+} from "./controllers/booking/BookingController";
+import { reservationRequest } from "./routes/bookingTable";
 
 dotenv.config({ path: ".env" });
 
@@ -101,6 +105,25 @@ export class Database {
       return result;
     } catch (err) {
       console.error("Couldn't fetch a opening hours from database");
+    }
+  }
+  public async insertReservation(reservationData: reservationRequest) {
+    try {
+      const query = `INSERT INTO Reservations (user_id,number_of_people,extra_information,status,reservation_time,reservation_date,email) VALUES (?,?,?,?,?,?,?)`;
+      const [result] = await this.connection.query(query, [
+        1,
+        1,
+        reservationData.extraInfo,
+        "waiting for accept",
+        reservationData.time,
+        reservationData.date,
+        reservationData.email,
+      ]);
+      console.log("Successfully inserted new reservation to database");
+      return true;
+    } catch (err) {
+      console.error("Couldn't insert a new reservation to database");
+      return true;
     }
   }
 }

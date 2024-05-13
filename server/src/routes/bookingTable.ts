@@ -1,12 +1,24 @@
 import express from "express";
 import { db } from "../server";
-import { BookingController } from "../entities/BookingController";
-import { BookTableValidator } from "../entities/BookTableValidator";
+import { BookingController } from "../controllers/booking/BookingController";
+import {
+  BookTableValidator,
+  validBookTableParams,
+} from "../entities/booking/BookTableValidator";
+import { User } from "../entities/user/User";
+import { validateStatus } from "../../../client/src/types/common";
+
 export const router = express.Router();
 
-function isBooked() {}
-
-function convertIntoInteraces(opening_time: string, closing_time: string) {}
+export interface reservationRequest {
+  date: string;
+  email: string;
+  phoneNumber: string;
+  time: string;
+  username: string;
+  extraInfo: string;
+  user: false | number; // false or user_id
+}
 
 router.post("/booking_hours", async (req, res) => {
   const { date } = req.body;
@@ -36,14 +48,46 @@ router.post("/booking_hours", async (req, res) => {
 });
 
 router.post("/book_table", async (req, res) => {
-  const { data, email, phoneNumber, time, user, username, extraInfo } =
-    req.body;
+  const reservationReq = {
+    date: req.body.date,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
+    time: req.body.time,
+    username: req.body.username,
+    extraInfo: req.body.extraInfo,
+    user: req.body.user,
+    numberOfGuests: req.body.numberOfGuests,
+  };
   const bookTableValidator = new BookTableValidator();
+  try {
+    const isValid: validBookTableParams =
+      await bookTableValidator.validateRequestParams(
+        reservationReq.date,
+        reservationReq.email,
+        reservationReq.phoneNumber,
+        reservationReq.time,
+        reservationReq.username,
+        reservationReq.numberOfGuests,
+      );
+    if (
+      !Object.values(isValid).every((item) => item === validateStatus.correct)
+    )
+      return res.status(400).json(isValid);
+    const success = await db.insertReservation(reservationReq);
+    if (!success)
+      return res
+        .status(400)
+        .json({ error: "Failed to add new reservation to database" });
+    return res.status(200).json({ message: "success" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Something went wrong with connection with database" });
+  }
 
   /*
   todo:
     1. validate data
-      1.3 time -> make unit test
       1.4 user -> if user is logged in, connect the reservation with a user else user -> guest(add guest user to database)
     2. insert data to database:
       2.1

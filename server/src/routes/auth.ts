@@ -1,10 +1,10 @@
 import express from "express";
-import { UserValidator } from "../entities/UserValidator";
+import { UserValidator } from "../entities/user/UserValidator";
 import bcrypt from "bcrypt";
 import { db } from "../server";
-import { User } from "../entities/User";
+import { User } from "../entities/user/User";
 import jwt from "jsonwebtoken";
-import { verifyToken } from "../entities/JWTVerify";
+import { verifyToken } from "../entities/user/JWTVerify";
 
 export const router = express.Router();
 

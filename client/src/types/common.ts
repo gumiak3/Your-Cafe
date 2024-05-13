@@ -25,12 +25,7 @@ export interface InputProps {
 }
 
 // register
-export interface RegisterFormProps {
-  email: string;
-  password: string;
-  repeatedPassword: string;
-  username: string;
-}
+
 export interface IValidateForm {
   [key: string]: validateStatus;
   email: validateStatus;
@@ -47,12 +42,11 @@ export enum validateStatus {
   emailInvalid = "Email does not match its requirements",
   noUserFound = "There is no such user",
   phoneNumberInvalid = "Phone number does not match its requirements",
-  numberOfGuests = "Invalid number of guests",
+  numberOfGuestsInvalid = "Invalid number of guests",
   timeNotSelected = "You need to select a time",
   timeInvalid = "Invalid Time",
+  dateInvalidFormat = "Invalid format of selected date",
 }
-
-// end of register
 
 // login
 export interface IValiidateLoginForm {
@@ -60,7 +54,6 @@ export interface IValiidateLoginForm {
   email: validateStatus;
   password: validateStatus;
 }
-// end of login
 
 export enum InputType {
   CHECKBOX = "checkbox",

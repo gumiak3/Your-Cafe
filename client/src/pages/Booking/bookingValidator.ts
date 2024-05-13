@@ -24,7 +24,7 @@ export class BookingValidator extends FormValidator {
     if (guests > 0 && guests <= 10) {
       return validateStatus.correct;
     }
-    return validateStatus.numberOfGuests;
+    return validateStatus.numberOfGuestsInvalid;
   }
   public validateForm(
     email: string,
