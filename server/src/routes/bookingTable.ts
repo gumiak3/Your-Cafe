@@ -69,11 +69,14 @@ router.post("/book_table", async (req, res) => {
         reservationReq.username,
         reservationReq.numberOfGuests,
       );
+
     if (
       !Object.values(isValid).every((item) => item === validateStatus.correct)
     )
-      return res.status(400).json(isValid);
+      return res.status(400).json({ message: "failed", isValid });
+
     const success = await db.insertReservation(reservationReq);
+
     if (!success)
       return res
         .status(400)
@@ -87,9 +90,7 @@ router.post("/book_table", async (req, res) => {
 
   /*
   todo:
-    1. validate data
-      1.4 user -> if user is logged in, connect the reservation with a user else user -> guest(add guest user to database)
-    2. insert data to database:
-      2.1
+    1. Front: if email is taken give message and prevent from sending post to server
+    2. Insert Guest to database
    */
 });

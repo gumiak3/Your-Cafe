@@ -18,6 +18,7 @@ import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
+import { Simulate } from "react-dom/test-utils";
 
 interface IBookingHours {
   date: string;
@@ -36,6 +37,17 @@ export type validatedBookingForm = {
   phoneNumber: validateStatus;
   numberOfGuests: validateStatus;
   time: validateStatus;
+};
+
+type bookTableType = {
+  username: string;
+  email: string;
+  phoneNumber: string;
+  date: string;
+  time: string;
+  user: boolean;
+  extraInfo: string;
+  numberOfGuests: number;
 };
 
 export default function Booking() {
@@ -78,16 +90,64 @@ export default function Booking() {
     }
     fetchBookingHours();
   }, [pickedDate]);
+  function clearInputs() {
+    inputRefs.current.forEach((input) => {
+      input.value = "";
+    });
+    setPickedDate(new Date());
+    setBookingHours(undefined);
+    if (textAreaRef && textAreaRef.current !== null) {
+      textAreaRef.current.value = "";
+    }
+  }
+  async function bookTable(inputs: bookTableType) {
+    try {
+      const response = await fetch("/api/booking/book_table", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: inputs.username,
+          email: inputs.email,
+          phoneNumber: inputs.phoneNumber,
+          date: inputs.date,
+          time: inputs.time,
+          user: inputs.user,
+          extraInfo: inputs.extraInfo,
+          numberOfGuests: inputs.numberOfGuests,
+        }),
+      });
+      const data = await response.json();
 
-  function handleClick(e: any) {
+      if (data.message !== "success") {
+        setValids(data);
+        return;
+      }
+      setValids(data);
+      clearInputs();
+      console.log(`Successfully booked a table`);
+      // todo: show popup with success
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleClick(e: any) {
     e.preventDefault();
-    if (!inputRefs && !textAreaRef && !pickedDate && !selectedTimeRef) {
+    if (!pickedDate && !selectedTimeRef && !textAreaRef) {
       return;
     }
-    const [username, email, phoneNumber, numberOfGuests] = getInputValues();
+    const [phoneNumber] = getInputValues();
+    const extraInfo = textAreaRef.current?.value ?? "";
     const time = selectedTimeRef.current;
+    if (isAuth) {
+    }
+    if (!inputRefs) {
+      return;
+    }
+    const [username, email, numberOfGuests] = getInputValues();
     const validator = new BookingValidator();
-    const extraInfo = textAreaRef.current?.value;
     const isValid = validator.validateForm(
       email,
       username,
@@ -95,21 +155,22 @@ export default function Booking() {
       Number(numberOfGuests),
       time,
     );
+
     setValids(isValid);
     if (
       !Object.values(isValid).every((valid) => valid === validateStatus.correct)
     ) {
       return;
     }
-    console.log("Trying to sent data to database...");
-    console.log({
+    await bookTable({
       username: username,
       email: email,
       phoneNumber: phoneNumber,
-      data: pickedDate.toISOString().split("T")[0],
+      date: pickedDate.toISOString().split("T")[0],
       time: time,
       user: isAuth,
       extraInfo: extraInfo,
+      numberOfGuests: Number(numberOfGuests),
     });
   }
 
@@ -124,7 +185,17 @@ export default function Booking() {
 
   function bookingForm() {
     if (isAuth) {
-      return <div>Welcome {user?.username}</div>;
+      return (
+        <>
+          <p className="mb-2 text-center">Witaj {user?.username}</p>
+          <Input
+            {...guestInputs[2]}
+            key={guestInputs[2].id + 1}
+            ref={(ref: HTMLInputElement) => addInputRef(ref)}
+            valid={valids[guestInputs[2].name]}
+          />
+        </>
+      );
     } else {
       return guestInputs.map((element, index) => (
         <Input

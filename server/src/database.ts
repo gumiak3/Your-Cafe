@@ -123,7 +123,7 @@ export class Database {
       return true;
     } catch (err) {
       console.error("Couldn't insert a new reservation to database");
-      return true;
+      return false;
     }
   }
 }
