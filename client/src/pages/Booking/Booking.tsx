@@ -18,7 +18,6 @@ import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
-import { Simulate } from "react-dom/test-utils";
 
 interface IBookingHours {
   date: string;
@@ -30,7 +29,7 @@ interface IBookingHours {
     };
   }[];
 }
-export type validatedBookingForm = {
+export type validatedGuestBookingForm = {
   [key: string]: validateStatus;
   email: validateStatus;
   username: validateStatus;
@@ -39,13 +38,20 @@ export type validatedBookingForm = {
   time: validateStatus;
 };
 
+export type validatedUserBookingForm = {
+  [key: string]: validateStatus;
+  phoneNumber: validateStatus;
+  numberOfGuests: validateStatus;
+  time: validateStatus;
+};
+
 type bookTableType = {
-  username: string;
-  email: string;
+  username: string | null;
+  email: string | null;
   phoneNumber: string;
   date: string;
   time: string;
-  user: boolean;
+  user: boolean | number;
   extraInfo: string;
   numberOfGuests: number;
 };
@@ -58,7 +64,9 @@ export default function Booking() {
   const [pickedDate, setPickedDate] = useState(new Date());
   const [bookingHours, setBookingHours] = useState<IBookingHours>();
   const selectedTimeRef = useRef<string>("");
-  const [valids, setValids] = useState<validatedBookingForm>({
+  const [valids, setValids] = useState<
+    validatedGuestBookingForm | validatedUserBookingForm
+  >({
     email: validateStatus.correct,
     username: validateStatus.correct,
     phoneNumber: validateStatus.correct,
@@ -90,16 +98,6 @@ export default function Booking() {
     }
     fetchBookingHours();
   }, [pickedDate]);
-  function clearInputs() {
-    inputRefs.current.forEach((input) => {
-      input.value = "";
-    });
-    setPickedDate(new Date());
-    setBookingHours(undefined);
-    if (textAreaRef && textAreaRef.current !== null) {
-      textAreaRef.current.value = "";
-    }
-  }
   async function bookTable(inputs: bookTableType) {
     try {
       const response = await fetch("/api/booking/book_table", {
@@ -135,43 +133,72 @@ export default function Booking() {
 
   async function handleClick(e: any) {
     e.preventDefault();
+    const validator = new BookingValidator();
     if (!pickedDate && !selectedTimeRef && !textAreaRef) {
       return;
     }
-    const [phoneNumber] = getInputValues();
     const extraInfo = textAreaRef.current?.value ?? "";
     const time = selectedTimeRef.current;
-    if (isAuth) {
-    }
-    if (!inputRefs) {
-      return;
-    }
-    const [username, email, numberOfGuests] = getInputValues();
-    const validator = new BookingValidator();
-    const isValid = validator.validateForm(
-      email,
-      username,
-      phoneNumber,
-      Number(numberOfGuests),
-      time,
-    );
 
-    setValids(isValid);
-    if (
-      !Object.values(isValid).every((valid) => valid === validateStatus.correct)
-    ) {
-      return;
+    if (isAuth && user) {
+      // user
+      const [phoneNumber, numberOfGuests] = getInputValues();
+      const isValid = validator.validateUserForm(
+        phoneNumber,
+        Number(numberOfGuests),
+        time,
+      );
+      setValids(isValid);
+      if (
+        !Object.values(isValid).every(
+          (valid) => valid === validateStatus.correct,
+        )
+      ) {
+        return;
+      }
+      await bookTable({
+        username: null,
+        email: null,
+        phoneNumber: phoneNumber,
+        date: pickedDate.toISOString().split("T")[0],
+        time: time,
+        user: user.id,
+        extraInfo: extraInfo,
+        numberOfGuests: Number(numberOfGuests),
+      });
+    } else {
+      // guest
+      if (!inputRefs) {
+        return;
+      }
+      const [username, email, phoneNumber, numberOfGuests] = getInputValues();
+      const isValid = validator.validateGuestForm(
+        email,
+        username,
+        phoneNumber,
+        Number(numberOfGuests),
+        time,
+      );
+      console.log("tu", numberOfGuests);
+      setValids(isValid);
+      if (
+        !Object.values(isValid).every(
+          (valid) => valid === validateStatus.correct,
+        )
+      ) {
+        return;
+      }
+      await bookTable({
+        username: username,
+        email: email,
+        phoneNumber: phoneNumber,
+        date: pickedDate.toISOString().split("T")[0],
+        time: time,
+        user: isAuth,
+        extraInfo: extraInfo,
+        numberOfGuests: Number(numberOfGuests),
+      });
     }
-    await bookTable({
-      username: username,
-      email: email,
-      phoneNumber: phoneNumber,
-      date: pickedDate.toISOString().split("T")[0],
-      time: time,
-      user: isAuth,
-      extraInfo: extraInfo,
-      numberOfGuests: Number(numberOfGuests),
-    });
   }
 
   function getInputValues() {
@@ -182,7 +209,16 @@ export default function Booking() {
       inputRefs.current.push(ref);
     }
   }
-
+  function clearInputs() {
+    inputRefs.current.forEach((input) => {
+      input.value = "";
+    });
+    setPickedDate(new Date());
+    setBookingHours(undefined);
+    if (textAreaRef && textAreaRef.current !== null) {
+      textAreaRef.current.value = "";
+    }
+  }
   function bookingForm() {
     if (isAuth) {
       return (
@@ -193,6 +229,12 @@ export default function Booking() {
             key={guestInputs[2].id + 1}
             ref={(ref: HTMLInputElement) => addInputRef(ref)}
             valid={valids[guestInputs[2].name]}
+          />
+          <Input
+            {...guestInputs[3]}
+            key={guestInputs[3].id + 1}
+            ref={(ref: HTMLInputElement) => addInputRef(ref)}
+            valid={valids[guestInputs[3].name]}
           />
         </>
       );

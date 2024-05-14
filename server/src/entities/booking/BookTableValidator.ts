@@ -67,6 +67,19 @@ export class BookTableValidator extends Validator {
       ? validateStatus.correct
       : validateStatus.numberOfGuestsInvalid;
   }
+  public async validateUserRequestParams(
+    date: string,
+    phoneNumber: string,
+    time: string,
+    numberOfGuests: number,
+  ) {
+    return {
+      date: this.validateDateFormat(date),
+      phoneNumber: this.validatePhoneNumber(phoneNumber),
+      time: await this.validateSelectedTime(time, date),
+      numberOfGuests: this.validateGuestsNumber(numberOfGuests),
+    };
+  }
   public async validateRequestParams(
     date: string,
     email: string,
@@ -76,7 +89,7 @@ export class BookTableValidator extends Validator {
     numberOfGuests: number,
   ) {
     return {
-      data: this.validateDateFormat(date),
+      date: this.validateDateFormat(date),
       email: this.validateEmail(email),
       phoneNumber: this.validatePhoneNumber(phoneNumber),
       time: await this.validateSelectedTime(time, date),

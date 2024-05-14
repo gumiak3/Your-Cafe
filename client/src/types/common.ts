@@ -79,5 +79,6 @@ export interface ButtonProps {
 
 export interface IUserState {
   username: string;
+  id: number;
   access: string;
 }

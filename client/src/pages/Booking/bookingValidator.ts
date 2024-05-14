@@ -1,6 +1,6 @@
 import { FormValidator } from "../../utils/validator";
 import { validateStatus } from "../../types/common";
-import { validatedBookingForm } from "./Booking";
+import { validatedGuestBookingForm, validatedUserBookingForm } from "./Booking";
 
 export class BookingValidator extends FormValidator {
   private validatePhoneNumber(phoneNumber: string) {
@@ -26,13 +26,24 @@ export class BookingValidator extends FormValidator {
     }
     return validateStatus.numberOfGuestsInvalid;
   }
-  public validateForm(
+  public validateUserForm(
+    phoneNumber: string,
+    numberOfGuests: number,
+    time: string,
+  ): validatedUserBookingForm {
+    return {
+      phoneNumber: this.validatePhoneNumber(phoneNumber),
+      numberOfGuests: this.validateNumberOfGuests(numberOfGuests),
+      time: this.validateTime(time),
+    };
+  }
+  public validateGuestForm(
     email: string,
     username: string,
     phoneNumber: string,
     numberOfGuests: number,
     time: string,
-  ): validatedBookingForm {
+  ): validatedGuestBookingForm {
     return {
       email: this.validateEmail(email),
       username: this.validateName(username),

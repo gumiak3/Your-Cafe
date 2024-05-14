@@ -1,24 +1,30 @@
 import express from "express";
 import { db } from "../server";
 import { BookingController } from "../controllers/booking/BookingController";
-import {
-  BookTableValidator,
-  validBookTableParams,
-} from "../entities/booking/BookTableValidator";
+import { BookTableValidator } from "../entities/booking/BookTableValidator";
+import { validateStatus } from "../types/common";
 import { User } from "../entities/user/User";
-import { validateStatus } from "../../../client/src/types/common";
 
 export const router = express.Router();
 
 export interface reservationRequest {
   date: string;
-  email: string;
+  email: string | null;
   phoneNumber: string;
   time: string;
-  username: string;
+  username: string | null;
   extraInfo: string;
   user: false | number; // false or user_id
+  numberOfGuests: number;
 }
+export type reservation = {
+  user: User;
+  numberOfGuests: number;
+  extraInfo: string;
+  status: string;
+  time: string;
+  date: string;
+};
 
 router.post("/booking_hours", async (req, res) => {
   const { date } = req.body;
@@ -47,8 +53,14 @@ router.post("/booking_hours", async (req, res) => {
   return res.status(200).json({ date: date, timeStamps });
 });
 
+function isValid(object: Object) {
+  return Object.values(object).every(
+    (valid) => valid === validateStatus.correct,
+  );
+}
+
 router.post("/book_table", async (req, res) => {
-  const reservationReq = {
+  const reservationReq: reservationRequest = {
     date: req.body.date,
     email: req.body.email,
     phoneNumber: req.body.phoneNumber,
@@ -60,8 +72,37 @@ router.post("/book_table", async (req, res) => {
   };
   const bookTableValidator = new BookTableValidator();
   try {
-    const isValid: validBookTableParams =
-      await bookTableValidator.validateRequestParams(
+    if (reservationReq.user) {
+      // auth user
+      const paramsValid = await bookTableValidator.validateUserRequestParams(
+        reservationReq.date,
+        reservationReq.phoneNumber,
+        reservationReq.time,
+        reservationReq.numberOfGuests,
+      );
+      if (!isValid(paramsValid)) {
+        return res.status(400).json(paramsValid);
+      }
+      const user = new User(await db.getUserById(reservationReq.user));
+      if (!user) {
+        throw new Error(`Couldn't auth user`);
+      }
+      const newReservation: reservation = {
+        user: user,
+        numberOfGuests: reservationReq.numberOfGuests,
+        extraInfo: reservationReq.extraInfo,
+        status: "waiting for accept",
+        time: reservationReq.time,
+        date: reservationReq.date,
+      };
+      const reservationSuccess = await db.insertReservation(newReservation);
+      if (!reservationSuccess) {
+        throw new Error(`Couldn't add new reservation to database`);
+      }
+      return res.status(200).json({ message: "success" });
+    } else {
+      // guest user
+      const paramsValid = await bookTableValidator.validateRequestParams(
         reservationReq.date,
         reservationReq.email,
         reservationReq.phoneNumber,
@@ -69,25 +110,43 @@ router.post("/book_table", async (req, res) => {
         reservationReq.username,
         reservationReq.numberOfGuests,
       );
-
-    if (
-      !Object.values(isValid).every((item) => item === validateStatus.correct)
-    )
-      return res.status(400).json({ message: "failed", isValid });
-
-    const success = await db.insertReservation(reservationReq);
-
-    if (!success)
-      return res
-        .status(400)
-        .json({ error: "Failed to add new reservation to database" });
-    return res.status(200).json({ message: "success" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Something went wrong with connection with database" });
+      if (!isValid(paramsValid)) {
+        return res.status(400).json(paramsValid);
+      }
+      // check if guest should log in
+      const isEmailTaken = await db.isEmailTaken(reservationReq.email);
+      if (isEmailTaken) {
+        paramsValid.email = validateStatus.emailTaken;
+        return res.status(400).json(paramsValid);
+      }
+      const guest = new User({
+        id: 0,
+        username: reservationReq.username,
+        email: reservationReq.email,
+        password: "",
+        type: "guest",
+      });
+      const dbNewGuest = await db.insertUser(guest);
+      if (!dbNewGuest) {
+        throw new Error(`Couldn't add new user to database`);
+      }
+      const newReservation: reservation = {
+        user: guest,
+        numberOfGuests: reservationReq.numberOfGuests,
+        extraInfo: reservationReq.extraInfo,
+        status: "waiting for accept",
+        time: reservationReq.time,
+        date: reservationReq.date,
+      };
+      const reservationSuccess = await db.insertReservation(newReservation);
+      if (!reservationSuccess) {
+        throw new Error(`Couldn't add new reservation to database`);
+      }
+      return res.status(200).json({ message: "success" });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
-
   /*
   todo:
     1. Front: if email is taken give message and prevent from sending post to server
