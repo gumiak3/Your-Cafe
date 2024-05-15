@@ -18,6 +18,7 @@ import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
+import { SuccessBook } from "./SuccessBook";
 
 interface IBookingHours {
   date: string;
@@ -57,6 +58,7 @@ type bookTableType = {
 };
 
 export default function Booking() {
+  const [successfullyBooked, setSuccessfullyBooked] = useState(false);
   const isAuth = useIsAuthenticated();
   const user: IUserState | null = useAuthUser();
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -125,7 +127,7 @@ export default function Booking() {
       setValids(data);
       clearInputs();
       console.log(`Successfully booked a table`);
-      // todo: show popup with success
+      setSuccessfullyBooked(true);
     } catch (err) {
       console.error(err);
     }
@@ -257,56 +259,60 @@ export default function Booking() {
   }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="background-image-w min-h-screen">
-        <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-6 rounded">
-          <h1 className="text-3xl text-center">Book a table</h1>
-          <form className="p-12 flex flex-col">
-            {bookingForm()}
-            <DatePicker
-              onChange={(e) => handleDateChange(e)}
-              disablePast
-              label="Date"
-              defaultValue={dayjs(pickedDate)}
-              slotProps={{
-                textField: {
-                  sx: {
-                    color: "#ad1457",
-                    borderRadius: "1px",
-                    borderWidth: "0px",
-                    borderColor: "#e91e63",
-                    border: "0px solid",
-                    backgroundColor: "white",
+      <div className="background-image-w min-h-screen flex">
+        {successfullyBooked ? (
+          <SuccessBook />
+        ) : (
+          <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-6 rounded">
+            <h1 className="text-3xl text-center">Book a table</h1>
+            <form className="p-12 flex flex-col">
+              {bookingForm()}
+              <DatePicker
+                onChange={(e) => handleDateChange(e)}
+                disablePast
+                label="Date"
+                defaultValue={dayjs(pickedDate)}
+                slotProps={{
+                  textField: {
+                    sx: {
+                      color: "#ad1457",
+                      borderRadius: "1px",
+                      borderWidth: "0px",
+                      borderColor: "#e91e63",
+                      border: "0px solid",
+                      backgroundColor: "white",
+                    },
                   },
-                },
-              }}
-            />
-            {bookingHours ? (
-              <TimeSelector
-                handleTimeSelect={handleTimeSelect}
-                date={bookingHours.date}
-                timeStamps={bookingHours.timeStamps}
-                valid={valids.time}
+                }}
               />
-            ) : (
-              <div className="w-full flex justify-center mt-4">
-                <CircularProgress color="inherit" />
-              </div>
-            )}
-            <TextArea
-              ref={textAreaRef}
-              name="extra-information"
-              id="extra-information"
-              type={InputType.TEXTAREA}
-              label={"Extra information"}
-            />
-            <Button
-              type={ButtonType.SUBMIT}
-              handleClick={(e) => handleClick(e)}
-            >
-              Book a table
-            </Button>
-          </form>
-        </section>
+              {bookingHours ? (
+                <TimeSelector
+                  handleTimeSelect={handleTimeSelect}
+                  date={bookingHours.date}
+                  timeStamps={bookingHours.timeStamps}
+                  valid={valids.time}
+                />
+              ) : (
+                <div className="w-full flex justify-center mt-4">
+                  <CircularProgress color="inherit" />
+                </div>
+              )}
+              <TextArea
+                ref={textAreaRef}
+                name="extra-information"
+                id="extra-information"
+                type={InputType.TEXTAREA}
+                label={"Extra information"}
+              />
+              <Button
+                type={ButtonType.SUBMIT}
+                handleClick={(e) => handleClick(e)}
+              >
+                Book a table
+              </Button>
+            </form>
+          </section>
+        )}
       </div>
     </LocalizationProvider>
   );
