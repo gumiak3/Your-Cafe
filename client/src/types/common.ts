@@ -21,15 +21,11 @@ export interface InputProps {
   value?: string;
   required?: boolean;
   valid?: validateStatus;
+  extraStyles?: string;
 }
 
 // register
-export interface RegisterFormProps {
-  email: string;
-  password: string;
-  repeatedPassword: string;
-  username: string;
-}
+
 export interface IValidateForm {
   [key: string]: validateStatus;
   email: validateStatus;
@@ -45,9 +41,12 @@ export enum validateStatus {
   usernameInvalid = "Invalid username",
   emailInvalid = "Email does not match its requirements",
   noUserFound = "There is no such user",
+  phoneNumberInvalid = "Phone number does not match its requirements",
+  numberOfGuestsInvalid = "Invalid number of guests",
+  timeNotSelected = "You need to select a time",
+  timeInvalid = "Invalid Time",
+  dateInvalidFormat = "Invalid format of selected date",
 }
-
-// end of register
 
 // login
 export interface IValiidateLoginForm {
@@ -55,7 +54,6 @@ export interface IValiidateLoginForm {
   email: validateStatus;
   password: validateStatus;
 }
-// end of login
 
 export enum InputType {
   CHECKBOX = "checkbox",
@@ -81,32 +79,6 @@ export interface ButtonProps {
 
 export interface IUserState {
   username: string;
+  id: number;
   access: string;
 }
-
-// time selector
-
-export interface ITimeSelector {
-  weekDay: string;
-  openHours: {
-    hour: number;
-    minutes: number;
-  };
-  closeHours: {
-    hour: number;
-    minutes: number;
-  };
-}
-export interface ITimeItem {
-  time: {
-    hour: number;
-    minute: number;
-  };
-  type: "am" | "pm";
-}
-
-export type openHoursType = {
-  day_of_the_week: string;
-  opening_time: string;
-  closing_time: string;
-};

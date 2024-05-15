@@ -1,4 +1,4 @@
-import { IValidateForm, validateStatus } from "../types/common";
+import { IValidateForm, validateStatus } from "../../types/common";
 
 export class UserValidator {
   public email: validateStatus = validateStatus.emailInvalid;

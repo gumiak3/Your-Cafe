@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { Input } from "../../components/Input";
 import Button from "../../components/Button";
 import { ButtonType, IValidateForm, validateStatus } from "../../types/common";
-import { registerValidator } from "./registerValidator";
+import { RegisterValidator } from "./registerValidator";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
@@ -22,6 +22,7 @@ export default function Register() {
     return values;
   }
   async function handleClick(e: any) {
+    const registerValidator = new RegisterValidator();
     e.preventDefault();
     const [username, email, password, repeatedPassword] = getInputValues();
     const validatedForm = registerValidator.validateForm(

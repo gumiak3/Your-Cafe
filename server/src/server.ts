@@ -15,7 +15,7 @@ app.use(
 );
 app.use("/api/user", authRoute);
 app.use(cookieParser());
-app.use("/booking", bookingRoute);
+app.use("/api/booking", bookingRoute);
 
 export const db = Database.getInstance();
 

@@ -1,4 +1,4 @@
-import { IUser } from "../types/common";
+import { IUser } from "../../types/common";
 
 export class User {
   public username: string;

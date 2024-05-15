@@ -1,3 +1,5 @@
+import * as dayjs from "dayjs";
+
 export interface IUser {
   id: number;
   username: string;

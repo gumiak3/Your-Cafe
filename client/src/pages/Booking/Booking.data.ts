@@ -15,7 +15,7 @@ export const guestInputs = [
   {
     type: InputType.TEXT,
     id: "name",
-    name: "name",
+    name: "username",
     label: "Name",
     placeholder: "Name",
     required: true,
@@ -31,7 +31,7 @@ export const guestInputs = [
   {
     type: InputType.TEL,
     id: "phone-number",
-    name: "phone-number",
+    name: "phoneNumber",
     label: "Phone number",
     placeholder: "000000000",
     required: true,
@@ -39,7 +39,7 @@ export const guestInputs = [
   {
     type: InputType.NUMBER,
     id: "number-of-guests",
-    name: "number-of-guests",
+    name: "numberOfGuests",
     label: "Number of guests",
     placeholder: "Number of guests",
     required: true,

@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import mysql from "mysql2";
-import { create } from "domain";
 import { DatabaseUser, IUser } from "./types/common";
+import {
+  IBookingHours,
+  IReservations,
+} from "./controllers/booking/BookingController";
+import { reservation, reservationRequest } from "./routes/bookingTable";
 
 dotenv.config({ path: ".env" });
 
@@ -43,7 +47,7 @@ export class Database {
       const [result] = await this.connection.query(query, email);
       return result[0].counted > 0;
     } catch (err) {
-      console.error("Something went wrong with selecting from database");
+      throw new Error("Something went wrong with selecting from database");
     }
   }
   public async insertUser(user: IUser): Promise<boolean> {
@@ -55,7 +59,6 @@ export class Database {
         user.password,
         user.type,
       ]);
-      console.log("Successfully added a user to database");
       return true;
     } catch (err) {
       console.error("something went wrong with inserting data to database");
@@ -66,10 +69,28 @@ export class Database {
     try {
       const query = `SELECT * FROM Users WHERE email = ?`;
       const [result] = await this.connection.query(query, email);
-      console.log("Successfully fetch user from db");
       return this.parseUser(result[0]);
     } catch (err) {
-      console.error("something went wrong with getting data from database");
+      throw new Error("something went wrong with getting data from database");
+    }
+  }
+  public async getUserById(id: number) {
+    try {
+      const query = `SELECT * FROM Users WHERE user_id = ?`;
+      const [result] = await this.connection.query(query, id);
+
+      return this.parseUser(result[0]);
+    } catch (err) {
+      throw new Error("User not found in database");
+    }
+  }
+  private async getUserId(email: string) {
+    try {
+      const query = `SELECT user_id FROM Users WHERE email = ?`;
+      const [result] = await this.connection.query(query, email);
+      return result[0].user_id;
+    } catch (err) {
+      throw new Error("something went wrong with getting data from database");
     }
   }
 
@@ -83,16 +104,41 @@ export class Database {
     };
   }
 
-  // booking
-
-  public async getOpeningHours() {
+  public async getOpeningHours(weekDay: string): Promise<IBookingHours> {
     try {
-      const query = `SELECT day_of_the_week, TIME_FORMAT(opening_time, '%H:%i') as opening_time, TIME_FORMAT(closing_time, '%H:%i') as closing_time FROM Restaurant_open_hours`;
-      const [result] = await this.connection.query(query);
+      const query = `SELECT day_of_the_week, TIME_FORMAT(opening_time, '%H:%i') as opening_time, TIME_FORMAT(closing_time, '%H:%i') as closing_time FROM Restaurant_open_hours WHERE day_of_the_week = ?`;
+      const [result] = await this.connection.query(query, weekDay);
       console.log(`Successfully fetch opening hours from db`);
+      return result[0];
+    } catch (err) {
+      throw new Error("Couldn't fetch a opening hours from database");
+    }
+  }
+  public async getDailyReservations(date: string): Promise<IReservations[]> {
+    try {
+      const query = `SELECT * FROM Reservations WHERE reservation_date = ?`;
+      const [result] = await this.connection.query(query, date);
       return result;
     } catch (err) {
-      console.error("Couldn't fetch a opening hours from database");
+      throw new Error("Couldn't fetch a opening hours from database");
+    }
+  }
+  public async insertReservation(reservationData: reservation) {
+    try {
+      const query = `INSERT INTO Reservations (user_id,number_of_people,extra_information,status,reservation_time,reservation_date) VALUES (?,?,?,?,?,?)`;
+      const userId: number = await this.getUserId(reservationData.user.email);
+      const [result] = await this.connection.query(query, [
+        userId,
+        reservationData.numberOfGuests,
+        reservationData.extraInfo,
+        reservationData.status,
+        reservationData.time,
+        reservationData.date,
+      ]);
+      return true;
+    } catch (err) {
+      throw new Error("Couldn't insert a new reservation to database");
+      return false;
     }
   }
 }

@@ -43,9 +43,10 @@ export default function SignIn() {
     }
   });
   async function handleClick(e: any) {
+    const signInValidator = new SignInValidator();
     e.preventDefault();
     const [email, password] = getInputValues();
-    const validatedForm = SignInValidator.validateForm(email, password);
+    const validatedForm = signInValidator.validateForm(email, password);
     setValids(validatedForm);
 
     if (
@@ -86,7 +87,11 @@ export default function SignIn() {
             token: data.token,
             type: "Bearer",
           },
-          userState: { username: data.user.username, access: data.user.type },
+          userState: {
+            username: data.user.username,
+            id: data.user.id,
+            access: data.user.type,
+          },
         });
         // make a popup window which will notify a user about successful login in.
         navigate("/");
