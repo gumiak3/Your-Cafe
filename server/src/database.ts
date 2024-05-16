@@ -141,4 +141,14 @@ export class Database {
       return false;
     }
   }
+  public async getReservations(offset: number, limit: number) {
+    try {
+      const query =
+        "SELECT * FROM Reservations ORDER BY reservation_date LIMIT ? OFFSET ?";
+      const [result] = await this.connection.query(query, [limit, offset]);
+      return result;
+    } catch (err) {
+      throw new Error(`Couldn't fetch reservations from database`);
+    }
+  }
 }

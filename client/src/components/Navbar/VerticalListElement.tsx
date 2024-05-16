@@ -7,10 +7,10 @@ export default function VerticalListElement({
   onClick,
 }: VerticalListElementProps) {
   return (
-    <li className="relative hover:text-orange-400 text-black">
-      <Link onClick={onClick} to={href}>
+    <Link onClick={onClick} to={href}>
+      <li className="relative hover:text-orange-400 text-black inline-block min-w-32 p-2">
         {content}
-      </Link>
-    </li>
+      </li>
+    </Link>
   );
 }

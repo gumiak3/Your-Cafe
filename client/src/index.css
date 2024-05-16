@@ -12,7 +12,9 @@ body{
     font-family: "Inter", sans-serif;
     background-color: rgb(255,255,255);
 }
-
+.transition-opacity {
+    transition: opacity 0.5s ease-in-out; /* Adjust the duration and timing function as needed */
+}
 .sneak-peek-hide{
     opacity:0;
     transform:translateY(-60%);

@@ -1,6 +1,8 @@
 import ListElement from "./ListElement";
 import { listElementDataLeft } from "./ListElement.data";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import { IUserState } from "../../types/common";
 export default function Navbar() {
   return (
     <nav className="flex justify-between items-center w-full" role="navigation">
