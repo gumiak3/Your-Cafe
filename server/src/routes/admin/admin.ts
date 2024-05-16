@@ -1,6 +1,7 @@
 import express from "express";
 import { db } from "../../server";
 import { isAdmin } from "../auth";
+import { DataConverter } from "../../entities/DataConverter";
 
 export const router = express.Router();
 
@@ -12,8 +13,9 @@ router.post("/reservations", isAdmin, async (req, res) => {
     const offset = (pageNumber - 1) * limitNumber;
 
     const reservations = await db.getReservations(offset, limit);
-
-    res.status(200).json(reservations);
+    const dataConverter = new DataConverter();
+    const convertedReservations = dataConverter.convertToCamel(reservations);
+    res.status(200).json(convertedReservations);
   } catch (err) {
     res.status(500).json({ error: err });
   }
