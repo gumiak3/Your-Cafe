@@ -144,7 +144,7 @@ export class Database {
   public async getReservations(offset: number, limit: number) {
     try {
       const query =
-        "SELECT * FROM Reservations ORDER BY reservation_date LIMIT ? OFFSET ?";
+        "SELECT *, TIME_FORMAT(reservation_time, '%H:%i') as reservation_time FROM Reservations ORDER BY reservation_date LIMIT ? OFFSET ?";
       const [result] = await this.connection.query(query, [limit, offset]);
       return result;
     } catch (err) {

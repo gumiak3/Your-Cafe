@@ -11,7 +11,6 @@ router.post("/reservations", isAdmin, async (req, res) => {
     const pageNumber = parseInt(page) || 1;
     const limitNumber = parseInt(limit) || 10;
     const offset = (pageNumber - 1) * limitNumber;
-
     const reservations = await db.getReservations(offset, limit);
     const dataConverter = new DataConverter();
     const convertedReservations = dataConverter.convertToCamel(reservations);
@@ -19,4 +18,11 @@ router.post("/reservations", isAdmin, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err });
   }
+});
+
+router.post("/update_reservation/:id", isAdmin, (req, res) => {
+  try {
+    const reservationId = Number(req.params.id);
+    const reservation = req.body;
+  } catch (err) {}
 });
