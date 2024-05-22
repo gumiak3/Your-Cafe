@@ -69,7 +69,10 @@ export class BookingController {
       let isBooked = false;
       const time = { hour: openHours.hour + i, minutes: openHours.minutes };
       bookedHours.forEach((bookedHour) => {
-        if (bookedHour.hour === time.hour) {
+        if (
+          bookedHour.hour === time.hour &&
+          bookedHour.minutes === time.minutes
+        ) {
           isBooked = true;
         }
       });

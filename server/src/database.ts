@@ -6,6 +6,7 @@ import {
   IReservations,
 } from "./controllers/booking/BookingController";
 import { reservation, reservationRequest } from "./routes/bookingTable";
+import { updateReservationParams } from "./controllers/admin/ReservationController";
 
 dotenv.config({ path: ".env" });
 
@@ -78,7 +79,6 @@ export class Database {
     try {
       const query = `SELECT * FROM Users WHERE user_id = ?`;
       const [result] = await this.connection.query(query, id);
-
       return this.parseUser(result[0]);
     } catch (err) {
       throw new Error("User not found in database");
@@ -149,6 +149,24 @@ export class Database {
       return result;
     } catch (err) {
       throw new Error(`Couldn't fetch reservations from database`);
+    }
+  }
+  public async updateReservation(reservation: updateReservationParams) {
+    try {
+      const query =
+        "UPDATE Reservations SET user_id = ?, number_of_people = ?, extra_information = ?, status = ?, reservation_time = ?, reservation_date = ? where reservation_id = ?";
+      const [result] = await this.connection.query(query, [
+        reservation.userId,
+        reservation.numberOfPeople,
+        reservation.extraInformation,
+        reservation.status,
+        reservation.reservationTime,
+        reservation.reservationDate,
+        reservation.reservationId,
+      ]);
+      return true;
+    } catch (err) {
+      throw new Error(`Couldn't update reservation in reservation table`);
     }
   }
 }

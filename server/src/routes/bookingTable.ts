@@ -53,7 +53,7 @@ router.post("/booking_hours", async (req, res) => {
   return res.status(200).json({ date: date, timeStamps });
 });
 
-function isValid(object: Object) {
+export function isValid(object: Object) {
   return Object.values(object).every(
     (valid) => valid === validateStatus.correct,
   );
@@ -147,9 +147,4 @@ router.post("/book_table", async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-  /*
-  todo:
-    1. Front: if email is taken give message and prevent from sending post to server
-    2. Insert Guest to database
-   */
 });
