@@ -77,7 +77,7 @@ export class Database {
   }
   public async getUserById(id: number) {
     try {
-      const query = `SELECT * FROM Users WHERE user_id = ?`;
+      const query = `SELECT user_id,username, email, type   FROM Users WHERE user_id = ?`;
       const [result] = await this.connection.query(query, id);
       return this.parseUser(result[0]);
     } catch (err) {

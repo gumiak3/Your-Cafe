@@ -1,4 +1,4 @@
-import { IValidateForm, validateStatus } from "../types/common";
+import { validateStatus } from "../types/common";
 
 export class FormValidator {
   public email: validateStatus = validateStatus.emailInvalid;
@@ -18,4 +18,10 @@ export class FormValidator {
     }
     return validateStatus.usernameInvalid;
   }
+}
+
+export function isValid(object: Object) {
+  return Object.values(object).every(
+    (valid) => valid === validateStatus.correct,
+  );
 }

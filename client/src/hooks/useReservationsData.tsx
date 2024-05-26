@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import useBookingHours from "./useBookingHours";
 
 type reservationType = {
   reservationId: number;
@@ -38,9 +39,9 @@ function convertData(data: reservationType[]) {
 }
 
 const useReservationsData = () => {
-  const [reservations, setReservations] = useState<
-    reservationType[] | convertedReservationType[]
-  >([]);
+  const [reservations, setReservations] = useState<convertedReservationType[]>(
+    [],
+  );
   const fetchReservations = async (page: number, limit: number) => {
     try {
       const authToken = Cookies.get("_auth");

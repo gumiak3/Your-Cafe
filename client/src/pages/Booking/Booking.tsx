@@ -19,17 +19,8 @@ import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
 import { SuccessBook } from "./SuccessBook";
+import useBookingHours, { IBookingHours } from "../../hooks/useBookingHours";
 
-interface IBookingHours {
-  date: string;
-  timeStamps: {
-    isBooked: boolean;
-    time: {
-      hour: number;
-      minutes: number;
-    };
-  }[];
-}
 export type validatedGuestBookingForm = {
   [key: string]: validateStatus;
   email: validateStatus;
@@ -64,7 +55,6 @@ export default function Booking() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [pickedDate, setPickedDate] = useState(new Date());
-  const [bookingHours, setBookingHours] = useState<IBookingHours>();
   const selectedTimeRef = useRef<string>("");
   const [valids, setValids] = useState<
     validatedGuestBookingForm | validatedUserBookingForm
@@ -75,31 +65,9 @@ export default function Booking() {
     time: validateStatus.correct,
     numberOfGuests: validateStatus.correct,
   });
-
-  useEffect(() => {
-    async function fetchBookingHours() {
-      try {
-        const response = await fetch("/api/booking/booking_hours", {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            date: pickedDate.toISOString().split("T")[0],
-          }),
-        });
-        if (!response.ok) {
-          throw new Error("Couldn't fetch booking hours from the server");
-        }
-        const data: IBookingHours = await response.json();
-        setBookingHours(data);
-        console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchBookingHours();
-  }, [pickedDate]);
+  const { bookingHours, fetchBookingHours, loading } = useBookingHours(
+    new Date(),
+  );
   async function bookTable(inputs: bookTableType) {
     try {
       const response = await fetch("/api/booking/book_table", {
@@ -162,7 +130,7 @@ export default function Booking() {
         username: null,
         email: null,
         phoneNumber: phoneNumber,
-        date: pickedDate.toISOString().split("T")[0],
+        date: pickedDate.toLocaleDateString("en-CA"),
         time: time,
         user: user.id,
         extraInfo: extraInfo,
@@ -181,7 +149,6 @@ export default function Booking() {
         Number(numberOfGuests),
         time,
       );
-      console.log("tu", numberOfGuests);
       setValids(isValid);
       if (
         !Object.values(isValid).every(
@@ -194,7 +161,7 @@ export default function Booking() {
         username: username,
         email: email,
         phoneNumber: phoneNumber,
-        date: pickedDate.toISOString().split("T")[0],
+        date: pickedDate.toLocaleDateString("en-CA"),
         time: time,
         user: isAuth,
         extraInfo: extraInfo,
@@ -216,7 +183,6 @@ export default function Booking() {
       input.value = "";
     });
     setPickedDate(new Date());
-    setBookingHours(undefined);
     if (textAreaRef && textAreaRef.current !== null) {
       textAreaRef.current.value = "";
     }
@@ -225,7 +191,7 @@ export default function Booking() {
     if (isAuth) {
       return (
         <>
-          <p className="mb-2 text-center">Witaj {user?.username}</p>
+          <p className="mb-2 text-center">Hi {user?.username}</p>
           <Input
             {...guestInputs[2]}
             key={guestInputs[2].id + 1}
@@ -252,10 +218,13 @@ export default function Booking() {
     }
   }
   function handleTimeSelect(selectedTime: string) {
+    console.log(selectedTime);
     selectedTimeRef.current = selectedTime;
   }
   async function handleDateChange(e: any) {
-    setPickedDate(new Date(e));
+    const newDate = new Date(e);
+    setPickedDate(newDate);
+    await fetchBookingHours(newDate);
   }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -285,7 +254,7 @@ export default function Booking() {
                   },
                 }}
               />
-              {bookingHours ? (
+              {!loading && bookingHours ? (
                 <TimeSelector
                   handleTimeSelect={handleTimeSelect}
                   date={bookingHours.date}

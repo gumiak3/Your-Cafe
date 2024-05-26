@@ -22,10 +22,10 @@ export class ReservationController extends Validator {
     return user && validateStatus.correct;
   }
   private validateStatus(status: string) {
-    const possibleStatus = ["waiting", "confirmed", "canceled"];
+    const possibleStatus = ["waiting", "confirmed", "canceled", "finished"];
     return possibleStatus.includes(status.toLowerCase())
       ? validateStatus.correct
-      : "Invalid Status";
+      : validateStatus.invalidStatus;
   }
   public async validateSelectedTime(
     time: string,
@@ -56,11 +56,8 @@ export class ReservationController extends Validator {
         (timeStamp) => timeStamp.isBooked === false,
       );
       const isValid =
-        freeTimeStamps.filter(
-          (timeStamp) =>
-            timeStamp.time.hour === convertedSelectedTime.hour &&
-            timeStamp.time.minutes === convertedSelectedTime.minutes,
-        ).length === 1;
+        freeTimeStamps.filter((timeStamp) => timeStamp.time === time).length ===
+        1;
 
       return isValid ? validateStatus.correct : validateStatus.timeInvalid;
     } catch (error) {

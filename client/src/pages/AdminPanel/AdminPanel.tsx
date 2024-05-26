@@ -2,6 +2,7 @@ import { LeftSideMenu } from "./LeftSideMenu/LeftSideMenu";
 import { Route, Routes } from "react-router-dom";
 import { ReservationsManagement } from "./Content/ReservationsManagement";
 import { AdminHeader } from "./AdminHeader";
+import { ToastContainer } from "react-toastify";
 
 export function AdminPanel() {
   return (

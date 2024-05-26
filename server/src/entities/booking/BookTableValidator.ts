@@ -33,7 +33,6 @@ export class BookTableValidator extends Validator {
     try {
       const dbOpeningHours = await db.getOpeningHours(weekDay);
       const dbDailyReservations = await db.getDailyReservations(date);
-
       const timeStamps: timeStamp[] = bookingController.getBookingTimeStamps(
         dbOpeningHours,
         dbDailyReservations,
@@ -42,11 +41,8 @@ export class BookTableValidator extends Validator {
         (timeStamp) => timeStamp.isBooked === false,
       );
       const isValid =
-        freeTimeStamps.filter(
-          (timeStamp) =>
-            timeStamp.time.hour === convertedSelectedTime.hour &&
-            timeStamp.time.minutes === convertedSelectedTime.minutes,
-        ).length === 1;
+        freeTimeStamps.filter((timeStamp) => timeStamp.time === time).length ===
+        1;
 
       return isValid ? validateStatus.correct : validateStatus.timeInvalid;
     } catch (error) {

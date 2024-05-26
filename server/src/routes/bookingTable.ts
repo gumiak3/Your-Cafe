@@ -25,7 +25,7 @@ export type reservation = {
   time: string;
   date: string;
 };
-
+// todo: change it to return only string: HH:MM
 router.post("/booking_hours", async (req, res) => {
   const { date } = req.body;
   const bookingController = new BookingController();
@@ -44,12 +44,11 @@ router.post("/booking_hours", async (req, res) => {
       .status(404)
       .json({ error: "Couldn't fetch a daily reservations" });
   }
-
   const timeStamps = bookingController.getBookingTimeStamps(
     dbOpeningHours,
     dbDailyReservations,
   );
-
+  console.log(timeStamps);
   return res.status(200).json({ date: date, timeStamps });
 });
 
@@ -71,9 +70,9 @@ router.post("/book_table", async (req, res) => {
     numberOfGuests: req.body.numberOfGuests,
   };
   const bookTableValidator = new BookTableValidator();
+  // todo: insert a phoneNumber to user database
   try {
     if (reservationReq.user) {
-      // auth user
       const paramsValid = await bookTableValidator.validateUserRequestParams(
         reservationReq.date,
         reservationReq.phoneNumber,
@@ -91,7 +90,7 @@ router.post("/book_table", async (req, res) => {
         user: user,
         numberOfGuests: reservationReq.numberOfGuests,
         extraInfo: reservationReq.extraInfo,
-        status: "waiting for accept",
+        status: "Waiting",
         time: reservationReq.time,
         date: reservationReq.date,
       };

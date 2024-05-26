@@ -36,7 +36,7 @@ router.post("/update_reservation/:id", isAdmin, async (req, res) => {
     const validated =
       await controller.validateUpdatingReservationParams(reservation);
     if (!isValid(validated)) {
-      return res.status(201).json(validated);
+      return res.status(201).json({ message: "error", content: validated });
     }
     // update reservation in database
     const success = await controller.updateReservation(reservation);
@@ -44,9 +44,20 @@ router.post("/update_reservation/:id", isAdmin, async (req, res) => {
     if (!success) {
       return res.status(201).json({ message: "Couldn't update" });
     }
-    return res.status(200).json({ message: "success" });
+    return res.status(200).json({ message: "success", content: reservation });
   } catch (err) {
+    console.error(err);
     // failed
-    return res.status(500).json({ error: err });
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+router.post("/get_user/:id", isAdmin, async (req, res) => {
+  try {
+    const user = await db.getUserById(Number(req.params.id));
+
+    res.status(200).json({ message: "success", user: user });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 });
