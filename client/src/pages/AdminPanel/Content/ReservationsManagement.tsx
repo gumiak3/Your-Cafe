@@ -214,26 +214,28 @@ export function ReservationsManagement() {
           />
         ) : null}
       </BasicModal>
-      <h1 className="text-center text-4xl font-bold p-12">Reservations</h1>
-      <DataGrid
-        columns={columns}
-        rows={reservations}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
+      <div className="overflow-y-auto h-screen">
+        <h1 className="text-center text-4xl font-bold p-12">Reservations</h1>
+        <DataGrid
+          columns={columns}
+          rows={reservations}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
             },
-          },
-        }}
-        rowSelection={false}
-        pageSizeOptions={[10, 25, 50, 75, 100]}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        processRowUpdate={(updatedRow, originalRow) =>
-          mySaveOnServerFunction(updatedRow, originalRow)
-        }
-        onProcessRowUpdateError={(err) => console.error(err)}
-      />
+          }}
+          rowSelection={false}
+          pageSizeOptions={[10, 25, 50, 75, 100]}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          processRowUpdate={(updatedRow, originalRow) =>
+            mySaveOnServerFunction(updatedRow, originalRow)
+          }
+          onProcessRowUpdateError={(err) => console.error(err)}
+        />
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 export function AdminPanel() {
   return (
-    <section className="flex">
+    <section className="flex overflow-y-hidden">
       <LeftSideMenu />
       <div className="w-full">
         <AdminHeader />

@@ -115,7 +115,10 @@ export default function Booking() {
 
     if (isAuth && authUser) {
       // user
-      const [phoneNumber, numberOfGuests] = getInputValues();
+      let [phoneNumber, numberOfGuests] = getInputValues();
+      if (user?.phoneNumber) {
+        phoneNumber = user.phoneNumber;
+      }
       const isValid = validator.validateUserForm(
         phoneNumber,
         Number(numberOfGuests),

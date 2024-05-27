@@ -87,8 +87,8 @@ export default function Profile() {
     fetchUserReservations(authUser.id);
   }, []);
   return (
-    <div className="background-image-w h-screen relative pt-12">
-      <div className="shadow-around max-w-7xl m-auto relative shadow-2xl bg-white bg-opacity-100 grid grid-cols-4">
+    <div className="background-image-w h-screen relative ">
+      <div className="shadow-around max-w-6xl m-auto relative shadow-2xl bg-white bg-opacity-100 grid grid-cols-4">
         <section className="col-span-4 p-4 border-2 grid grid-cols-4">
           <div className="text-6xl text-white rounded-full bg-gray-500 w-[150px] h-[150px] col-span-1 flex justify-center items-center">
             <FontAwesomeIcon icon={faUser} />
@@ -130,7 +130,7 @@ export default function Profile() {
           {/*reservation table*/}
           <div className="col-span-3 w-full relative overflow-x-auto min-h-96">
             {isLoading ? (
-              <div className="w-full flex justify-center mt-4">
+              <div className="w-full flex justify-center `mt`-4">
                 <CircularProgress color="inherit" />
               </div>
             ) : (

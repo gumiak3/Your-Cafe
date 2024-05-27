@@ -97,8 +97,8 @@ export default function Register() {
   }
   console.log(valids);
   return (
-    <div className="background-image-w h-screen relative">
-      <div className="shadow-around max-w-lg m-auto relative top-20  shadow-2xl bg-white bg-opacity-70 p-6 rounded">
+    <div className="background-image-w h-screen">
+      <div className="shadow-around max-w-lg m-auto relative  shadow-2xl bg-white bg-opacity-70 p-6 rounded">
         <h2 className="text-3xl text-center">Sign up</h2>
         <form className="p-12">
           {inputs.map((input, index) => {
