@@ -6,6 +6,7 @@ import {
   IReservations,
 } from "./controllers/booking/BookingController";
 import { reservation, reservationRequest } from "./routes/bookingTable";
+import { updateReservationParams } from "./controllers/admin/ReservationController";
 
 dotenv.config({ path: ".env" });
 
@@ -52,17 +53,26 @@ export class Database {
   }
   public async insertUser(user: IUser): Promise<boolean> {
     try {
-      const query = `INSERT INTO Users (email, username, password_hash, type) VALUES (?,?,?, ?)`;
+      const query = `INSERT INTO Users (email, username, password_hash, type, phone_number) VALUES (?,?,?,?,?)`;
       const [result] = await this.connection.query(query, [
         user.email,
         user.username,
         user.password,
         user.type,
+        user.phoneNumber,
       ]);
       return true;
     } catch (err) {
       console.error("something went wrong with inserting data to database");
       return false;
+    }
+  }
+  public async updateUserPhoneNumber(userId: number, phoneNumber: string) {
+    try {
+      const query = `UPDATE Users SET phone_number = ? WHERE user_id = ?`;
+      await this.connection.query(query, [phoneNumber, userId]);
+    } catch (err) {
+      throw new Error("something went wrong with updating data in database");
     }
   }
   public async getUser(email: string) {
@@ -76,9 +86,8 @@ export class Database {
   }
   public async getUserById(id: number) {
     try {
-      const query = `SELECT * FROM Users WHERE user_id = ?`;
+      const query = `SELECT user_id,username, email, type, phone_number FROM Users WHERE user_id = ?`;
       const [result] = await this.connection.query(query, id);
-
       return this.parseUser(result[0]);
     } catch (err) {
       throw new Error("User not found in database");
@@ -101,6 +110,7 @@ export class Database {
       email: dbUser.email,
       password: dbUser.password_hash,
       type: dbUser.type,
+      phoneNumber: dbUser.phone_number,
     };
   }
 
@@ -139,6 +149,43 @@ export class Database {
     } catch (err) {
       throw new Error("Couldn't insert a new reservation to database");
       return false;
+    }
+  }
+  public async getReservations(offset: number, limit: number) {
+    try {
+      const query =
+        "SELECT *, TIME_FORMAT(reservation_time, '%H:%i') as reservation_time FROM Reservations ORDER BY reservation_date LIMIT ? OFFSET ?";
+      const [result] = await this.connection.query(query, [limit, offset]);
+      return result;
+    } catch (err) {
+      throw new Error(`Couldn't fetch reservations from database`);
+    }
+  }
+  public async updateReservation(reservation: updateReservationParams) {
+    try {
+      const query =
+        "UPDATE Reservations SET user_id = ?, number_of_people = ?, extra_information = ?, status = ?, reservation_time = ?, reservation_date = ? where reservation_id = ?";
+      const [result] = await this.connection.query(query, [
+        reservation.userId,
+        reservation.numberOfPeople,
+        reservation.extraInformation,
+        reservation.status,
+        reservation.reservationTime,
+        reservation.reservationDate,
+        reservation.reservationId,
+      ]);
+      return true;
+    } catch (err) {
+      throw new Error(`Couldn't update reservation in reservation table`);
+    }
+  }
+  public async getUserReservations(userId: number) {
+    try {
+      const query = `SELECT *, TIME_FORMAT(reservation_time, '%H:%i') as reservation_time FROM Reservations WHERE user_id = ?`;
+      const [result] = await this.connection.query(query, userId);
+      return result;
+    } catch (err) {
+      throw new Error(`Couldn't fetch reservations from database`);
     }
   }
 }

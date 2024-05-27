@@ -1,5 +1,17 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
+type invalid = {
+  numberOfPeople: validateStatus;
+  reservationDate: validateStatus;
+  reservationTime: validateStatus;
+  status: validateStatus;
+  userId: validateStatus;
+};
+export interface success {
+  message: string;
+  content?: invalid;
+}
+
 export interface ListElementProps {
   href: string;
   content: string;
@@ -46,6 +58,7 @@ export enum validateStatus {
   timeNotSelected = "You need to select a time",
   timeInvalid = "Invalid Time",
   dateInvalidFormat = "Invalid format of selected date",
+  invalidStatus = "Invalid status",
 }
 
 // login

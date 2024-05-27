@@ -8,6 +8,7 @@ import AuthOutlet from "@auth-kit/react-router/AuthOutlet";
 import Booking from "./pages/Booking/Booking";
 import { AdminRoute } from "./utils/AdminRoute";
 import { AdminPanel } from "./pages/AdminPanel/AdminPanel";
+import Profile from "./pages/Profile/Profile";
 export default function App() {
   const location = useLocation();
   const isAdminPanel = location.pathname.startsWith("/AdminPanel");
@@ -24,7 +25,7 @@ export default function App() {
           path="/Profile"
           element={<AuthOutlet fallbackPath={"/SignIn"} />}
         >
-          <Route path="/Profile" element={"/Profile"} />
+          <Route path="/Profile" element={<Profile />} />
         </Route>
         <Route path="/booking" element={<Booking />} />
 

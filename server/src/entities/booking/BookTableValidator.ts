@@ -13,6 +13,7 @@ export type validBookTableParams = {
   time: validateStatus;
   username: validateStatus;
 };
+
 export class BookTableValidator extends Validator {
   private validatePhoneNumber(phoneNumber: string) {
     const phoneNumberRegex = /^\d{9}$/;
@@ -21,13 +22,7 @@ export class BookTableValidator extends Validator {
     }
     return validateStatus.phoneNumberInvalid;
   }
-  private validateDateFormat(data: string) {
-    const dateRegex = /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
-    if (dateRegex.test(data)) {
-      return validateStatus.correct;
-    }
-    return validateStatus.dateInvalidFormat;
-  }
+
   private async validateSelectedTime(time: string, date: string) {
     if (time === "") return;
     const bookingController = new BookingController();
@@ -38,7 +33,6 @@ export class BookTableValidator extends Validator {
     try {
       const dbOpeningHours = await db.getOpeningHours(weekDay);
       const dbDailyReservations = await db.getDailyReservations(date);
-
       const timeStamps: timeStamp[] = bookingController.getBookingTimeStamps(
         dbOpeningHours,
         dbDailyReservations,
@@ -47,11 +41,8 @@ export class BookTableValidator extends Validator {
         (timeStamp) => timeStamp.isBooked === false,
       );
       const isValid =
-        freeTimeStamps.filter(
-          (timeStamp) =>
-            timeStamp.time.hour === convertedSelectedTime.hour &&
-            timeStamp.time.minutes === convertedSelectedTime.minutes,
-        ).length === 1;
+        freeTimeStamps.filter((timeStamp) => timeStamp.time === time).length ===
+        1;
 
       return isValid ? validateStatus.correct : validateStatus.timeInvalid;
     } catch (error) {
@@ -62,11 +53,7 @@ export class BookTableValidator extends Validator {
     if (name.length > 0) return validateStatus.correct;
     return validateStatus.usernameInvalid;
   }
-  private validateGuestsNumber(guests: number) {
-    return guests > 0 && guests <= 10
-      ? validateStatus.correct
-      : validateStatus.numberOfGuestsInvalid;
-  }
+
   public async validateUserRequestParams(
     date: string,
     phoneNumber: string,

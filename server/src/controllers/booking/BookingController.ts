@@ -9,7 +9,7 @@ export interface IBookingHours {
   closing_time: string;
 }
 export type timeStamp = {
-  time: { hour: number; minutes: number };
+  time: string;
   isBooked: boolean;
 };
 
@@ -43,7 +43,9 @@ export class BookingController {
     const bookedHours = [];
     dailyReservations.forEach((item) => {
       const reservationTime = this.convertIntoInterface(item.reservation_time);
-      bookedHours.push(reservationTime);
+      if (item.status.toLowerCase() !== "cancelled") {
+        bookedHours.push(reservationTime);
+      }
     });
     return bookedHours;
   }
@@ -53,28 +55,29 @@ export class BookingController {
   ) {
     const openHours = this.convertIntoInterface(bookingHours.opening_time);
     const closeHours = this.convertIntoInterface(bookingHours.closing_time);
-
     const bookedHours = this.getBookedHours(dailyReservations);
-
     return this.calcBookingTimeStamps(openHours, closeHours, bookedHours);
   }
   private calcBookingTimeStamps(
     openHours: IHours,
     closeHours: IHours,
     bookedHours: IHours[],
-  ): { time: { hour: number; minutes: number }; isBooked: boolean }[] {
+  ): { time: string; isBooked: boolean }[] {
     const nItems = closeHours.hour - openHours.hour;
     const items = [];
     for (let i = 0; i < nItems; i++) {
       let isBooked = false;
       const time = { hour: openHours.hour + i, minutes: openHours.minutes };
       bookedHours.forEach((bookedHour) => {
-        if (bookedHour.hour === time.hour) {
+        if (
+          bookedHour.hour === time.hour &&
+          bookedHour.minutes === time.minutes
+        ) {
           isBooked = true;
         }
       });
       items.push({
-        time: { hour: openHours.hour + i, minutes: openHours.minutes },
+        time: `${time.hour.toString().padStart(2, "0")}:${time.minutes.toString().padStart(2, "0")}`,
         isBooked: isBooked,
       });
     }

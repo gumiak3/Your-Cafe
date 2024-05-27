@@ -25,7 +25,7 @@ export type reservation = {
   time: string;
   date: string;
 };
-
+// todo: change it to return only string: HH:MM
 router.post("/booking_hours", async (req, res) => {
   const { date } = req.body;
   const bookingController = new BookingController();
@@ -44,16 +44,14 @@ router.post("/booking_hours", async (req, res) => {
       .status(404)
       .json({ error: "Couldn't fetch a daily reservations" });
   }
-
   const timeStamps = bookingController.getBookingTimeStamps(
     dbOpeningHours,
     dbDailyReservations,
   );
-
   return res.status(200).json({ date: date, timeStamps });
 });
 
-function isValid(object: Object) {
+export function isValid(object: Object) {
   return Object.values(object).every(
     (valid) => valid === validateStatus.correct,
   );
@@ -71,9 +69,9 @@ router.post("/book_table", async (req, res) => {
     numberOfGuests: req.body.numberOfGuests,
   };
   const bookTableValidator = new BookTableValidator();
+  // todo: insert a phoneNumber to user database
   try {
     if (reservationReq.user) {
-      // auth user
       const paramsValid = await bookTableValidator.validateUserRequestParams(
         reservationReq.date,
         reservationReq.phoneNumber,
@@ -87,11 +85,18 @@ router.post("/book_table", async (req, res) => {
       if (!user) {
         throw new Error(`Couldn't auth user`);
       }
+      if (!user.phoneNumber) {
+        user.setPhoneNumber(reservationReq.phoneNumber);
+        const dbUpdateUser = await db.updateUserPhoneNumber(
+          user.id,
+          user.phoneNumber,
+        );
+      }
       const newReservation: reservation = {
         user: user,
         numberOfGuests: reservationReq.numberOfGuests,
         extraInfo: reservationReq.extraInfo,
-        status: "waiting for accept",
+        status: "Waiting",
         time: reservationReq.time,
         date: reservationReq.date,
       };
@@ -126,6 +131,7 @@ router.post("/book_table", async (req, res) => {
         password: "",
         type: "guest",
       });
+      guest.setPhoneNumber(reservationReq.phoneNumber);
       const dbNewGuest = await db.insertUser(guest);
       if (!dbNewGuest) {
         throw new Error(`Couldn't add new user to database`);
@@ -134,7 +140,7 @@ router.post("/book_table", async (req, res) => {
         user: guest,
         numberOfGuests: reservationReq.numberOfGuests,
         extraInfo: reservationReq.extraInfo,
-        status: "waiting for accept",
+        status: "Waiting",
         time: reservationReq.time,
         date: reservationReq.date,
       };
@@ -147,9 +153,4 @@ router.post("/book_table", async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-  /*
-  todo:
-    1. Front: if email is taken give message and prevent from sending post to server
-    2. Insert Guest to database
-   */
 });

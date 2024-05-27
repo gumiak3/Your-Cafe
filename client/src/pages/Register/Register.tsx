@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import { ButtonType, IValidateForm, validateStatus } from "../../types/common";
 import { RegisterValidator } from "./registerValidator";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -16,7 +17,7 @@ export default function Register() {
     repeatedPassword: validateStatus.correct,
   });
   const navigate = useNavigate();
-  const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
+  // const [successfullyRegistered, setSuccessfullyRegistered] = useState(false);
   function getInputValues() {
     const values = inputRefs.current.map((input) => input.value);
     return values;
@@ -32,7 +33,7 @@ export default function Register() {
       repeatedPassword,
     );
     setValids(validatedForm);
-    setSuccessfullyRegistered(false);
+    // setSuccessfullyRegistered(false);
 
     if (
       Object.values(validatedForm).every(
@@ -66,10 +67,11 @@ export default function Register() {
         }
         setValids(data);
         clearInputs();
-        setSuccessfullyRegistered(true);
-        setTimeout(() => {
-          navigate("/SignIn");
-        }, 1000);
+        toast.success(`Successfully registered!`, {
+          position: "top-center",
+        });
+        // setSuccessfullyRegistered(true);
+        navigate("/SignIn");
       } catch (err) {
         console.error(err);
       }
@@ -112,11 +114,11 @@ export default function Register() {
           <Button type={ButtonType.SUBMIT} handleClick={handleClick}>
             Sign up
           </Button>
-          {successfullyRegistered ? (
-            <p className="mt-4 mb-0 text-center text-green-400">
-              Successfully registered!
-            </p>
-          ) : null}
+          {/*{successfullyRegistered ? (*/}
+          {/*  <p className="mt-4 mb-0 text-center text-green-400">*/}
+          {/*    Successfully registered!*/}
+          {/*  </p>*/}
+          {/*) : null}*/}
         </form>
       </div>
     </div>

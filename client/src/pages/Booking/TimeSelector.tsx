@@ -9,10 +9,7 @@ interface ITimeSelector {
   date: string;
   timeStamps: {
     isBooked: boolean;
-    time: {
-      hour: number;
-      minutes: number;
-    };
+    time: string;
   }[];
   handleTimeSelect: (time: string) => void;
   valid: validateStatus;

@@ -4,9 +4,31 @@ import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/user/User";
 import jwt from "jsonwebtoken";
-import { verifyToken } from "../entities/user/JWTVerify";
+import { DataConverter } from "../entities/DataConverter";
 
 export const router = express.Router();
+
+async function hasAccess(userId: number) {
+  const user = await db.getUserById(userId);
+  return user.type === "admin";
+}
+export const isAdmin = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1]; // ['Bearer', 'token']
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    req.user = decoded;
+    const access = await hasAccess(req.user.userId);
+    if (!access) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    next();
+  });
+};
 
 export async function hashPassword(password: string, saltRounds: number) {
   try {
@@ -66,15 +88,17 @@ router.post("/signin", async (req, res) => {
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
     });
+
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
     return res.status(201).json({ auth: true, token, user });
   } catch (err) {
     console.error("something went wrong");
     return res.status(500).json({ error: "login failed" });
   }
-});
-
-router.post("/test", verifyToken, (req, res) => {
-  const data = req.body;
 });
 
 router.post("/refresh-token", (req, res) => {
@@ -93,4 +117,25 @@ router.post("/refresh-token", (req, res) => {
     );
     return res.status(201).json({ auth: true, newToken });
   });
+});
+
+router.post("/get_user/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = await db.getUserById(Number(id));
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  return res.status(200).json(user);
+});
+
+router.post("/reservations", async (req, res) => {
+  const userId = Number(req.body.userId);
+  try {
+    const reservations = await db.getUserReservations(userId);
+    const dataConverter = new DataConverter();
+    const convertedReservations = dataConverter.convertToReadable(reservations);
+    return res.status(200).json(convertedReservations);
+  } catch (err) {
+    return res.status(500).json({ error: "Couldn't fetch reservations" });
+  }
 });
