@@ -96,7 +96,11 @@ export default function Profile() {
           <div className="flex flex-col gap-6 col-span-3">
             {user && (
               <Info
-                col={[user?.username, user?.email, user?.phoneNumber]}
+                col={[
+                  user?.username,
+                  user?.email,
+                  user.phoneNumber || "000-000-000",
+                ]}
                 row={["Username", "Email", "Phone number"]}
               />
             )}
@@ -118,13 +122,13 @@ export default function Profile() {
                 <AdminMenuListElement
                   {...element}
                   key={`profile-panel-${index}`}
-                  className="border-b-2 p-6"
+                  className="border-b-2 p-[15px]"
                 />
               );
             })}
           </nav>
           {/*reservation table*/}
-          <div className="col-span-3 w-full relative overflow-x-auto">
+          <div className="col-span-3 w-full relative overflow-x-auto min-h-96">
             {isLoading ? (
               <div className="w-full flex justify-center mt-4">
                 <CircularProgress color="inherit" />
