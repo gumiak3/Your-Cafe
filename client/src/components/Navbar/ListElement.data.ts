@@ -1,17 +1,16 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 export const listElementDataLeft = [
-
-  {
-    href: "/menu",
-    content: "Menu",
-    hoverSneakPeek: false,
-  },
+  // {
+  //   href: "/menu",
+  //   content: "Menu",
+  //   hoverSneakPeek: false,
+  // },
   {
     href: "/Booking",
     content: "Booking",
-    hoverSneakPeek: false
-  }
+    hoverSneakPeek: false,
+  },
 ];
 export const listElementDataRight = [
   {

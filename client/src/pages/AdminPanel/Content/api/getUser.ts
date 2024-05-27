@@ -5,6 +5,7 @@ export interface IUser {
   id: number;
   type: string;
   username: string;
+  phoneNumber: string;
 }
 interface getUserResponse {
   message: string;

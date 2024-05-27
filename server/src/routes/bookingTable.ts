@@ -48,7 +48,6 @@ router.post("/booking_hours", async (req, res) => {
     dbOpeningHours,
     dbDailyReservations,
   );
-  console.log(timeStamps);
   return res.status(200).json({ date: date, timeStamps });
 });
 
@@ -85,6 +84,13 @@ router.post("/book_table", async (req, res) => {
       const user = new User(await db.getUserById(reservationReq.user));
       if (!user) {
         throw new Error(`Couldn't auth user`);
+      }
+      if (!user.phoneNumber) {
+        user.setPhoneNumber(reservationReq.phoneNumber);
+        const dbUpdateUser = await db.updateUserPhoneNumber(
+          user.id,
+          user.phoneNumber,
+        );
       }
       const newReservation: reservation = {
         user: user,
@@ -125,6 +131,7 @@ router.post("/book_table", async (req, res) => {
         password: "",
         type: "guest",
       });
+      guest.setPhoneNumber(reservationReq.phoneNumber);
       const dbNewGuest = await db.insertUser(guest);
       if (!dbNewGuest) {
         throw new Error(`Couldn't add new user to database`);
@@ -133,7 +140,7 @@ router.post("/book_table", async (req, res) => {
         user: guest,
         numberOfGuests: reservationReq.numberOfGuests,
         extraInfo: reservationReq.extraInfo,
-        status: "waiting for accept",
+        status: "Waiting",
         time: reservationReq.time,
         date: reservationReq.date,
       };

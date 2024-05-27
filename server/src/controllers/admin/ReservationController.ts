@@ -22,7 +22,7 @@ export class ReservationController extends Validator {
     return user && validateStatus.correct;
   }
   private validateStatus(status: string) {
-    const possibleStatus = ["waiting", "confirmed", "canceled", "finished"];
+    const possibleStatus = ["waiting", "confirmed", "cancelled", "finished"];
     return possibleStatus.includes(status.toLowerCase())
       ? validateStatus.correct
       : validateStatus.invalidStatus;

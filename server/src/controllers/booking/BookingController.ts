@@ -43,7 +43,9 @@ export class BookingController {
     const bookedHours = [];
     dailyReservations.forEach((item) => {
       const reservationTime = this.convertIntoInterface(item.reservation_time);
-      bookedHours.push(reservationTime);
+      if (item.status.toLowerCase() !== "cancelled") {
+        bookedHours.push(reservationTime);
+      }
     });
     return bookedHours;
   }

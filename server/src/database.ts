@@ -53,17 +53,26 @@ export class Database {
   }
   public async insertUser(user: IUser): Promise<boolean> {
     try {
-      const query = `INSERT INTO Users (email, username, password_hash, type) VALUES (?,?,?, ?)`;
+      const query = `INSERT INTO Users (email, username, password_hash, type, phone_number) VALUES (?,?,?,?,?)`;
       const [result] = await this.connection.query(query, [
         user.email,
         user.username,
         user.password,
         user.type,
+        user.phoneNumber,
       ]);
       return true;
     } catch (err) {
       console.error("something went wrong with inserting data to database");
       return false;
+    }
+  }
+  public async updateUserPhoneNumber(userId: number, phoneNumber: string) {
+    try {
+      const query = `UPDATE Users SET phone_number = ? WHERE user_id = ?`;
+      await this.connection.query(query, [phoneNumber, userId]);
+    } catch (err) {
+      throw new Error("something went wrong with updating data in database");
     }
   }
   public async getUser(email: string) {
@@ -77,7 +86,7 @@ export class Database {
   }
   public async getUserById(id: number) {
     try {
-      const query = `SELECT user_id,username, email, type   FROM Users WHERE user_id = ?`;
+      const query = `SELECT user_id,username, email, type, phone_number FROM Users WHERE user_id = ?`;
       const [result] = await this.connection.query(query, id);
       return this.parseUser(result[0]);
     } catch (err) {
@@ -101,6 +110,7 @@ export class Database {
       email: dbUser.email,
       password: dbUser.password_hash,
       type: dbUser.type,
+      phoneNumber: dbUser.phone_number,
     };
   }
 
@@ -167,6 +177,15 @@ export class Database {
       return true;
     } catch (err) {
       throw new Error(`Couldn't update reservation in reservation table`);
+    }
+  }
+  public async getUserReservations(userId: number) {
+    try {
+      const query = `SELECT *, TIME_FORMAT(reservation_time, '%H:%i') as reservation_time FROM Reservations WHERE user_id = ?`;
+      const [result] = await this.connection.query(query, userId);
+      return result;
+    } catch (err) {
+      throw new Error(`Couldn't fetch reservations from database`);
     }
   }
 }

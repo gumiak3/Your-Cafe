@@ -4,7 +4,7 @@ interface IInfo {
 }
 export default function Info({ row, col }: IInfo) {
   return (
-    <section className="grid grid-cols-3">
+    <section className="grid grid-cols-3 gap-4">
       <div className="flex flex-col col-span-1 space-y-4">
         {row.map((item, index) => {
           return (

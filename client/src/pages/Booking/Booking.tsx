@@ -13,13 +13,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import TimeSelector from "./TimeSelector";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Button from "../../components/Button";
 import { TextArea } from "../../components/TextArea";
 import { CircularProgress } from "@mui/material";
 import { BookingValidator } from "./bookingValidator";
 import { SuccessBook } from "./SuccessBook";
-import useBookingHours, { IBookingHours } from "../../hooks/useBookingHours";
+import useBookingHours from "../../hooks/useBookingHours";
+import useGetUser from "../../hooks/useGetUser";
 
 export type validatedGuestBookingForm = {
   [key: string]: validateStatus;
@@ -51,11 +52,13 @@ type bookTableType = {
 export default function Booking() {
   const [successfullyBooked, setSuccessfullyBooked] = useState(false);
   const isAuth = useIsAuthenticated();
-  const user: IUserState | null = useAuthUser();
+  const authUser: IUserState | null = useAuthUser();
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [pickedDate, setPickedDate] = useState(new Date());
   const selectedTimeRef = useRef<string>("");
+  const { user } = useGetUser({ userId: authUser?.id || 0 });
+
   const [valids, setValids] = useState<
     validatedGuestBookingForm | validatedUserBookingForm
   >({
@@ -110,7 +113,7 @@ export default function Booking() {
     const extraInfo = textAreaRef.current?.value ?? "";
     const time = selectedTimeRef.current;
 
-    if (isAuth && user) {
+    if (isAuth && authUser) {
       // user
       const [phoneNumber, numberOfGuests] = getInputValues();
       const isValid = validator.validateUserForm(
@@ -132,7 +135,7 @@ export default function Booking() {
         phoneNumber: phoneNumber,
         date: pickedDate.toLocaleDateString("en-CA"),
         time: time,
-        user: user.id,
+        user: authUser.id,
         extraInfo: extraInfo,
         numberOfGuests: Number(numberOfGuests),
       });
@@ -191,13 +194,15 @@ export default function Booking() {
     if (isAuth) {
       return (
         <>
-          <p className="mb-2 text-center">Hi {user?.username}</p>
-          <Input
-            {...guestInputs[2]}
-            key={guestInputs[2].id + 1}
-            ref={(ref: HTMLInputElement) => addInputRef(ref)}
-            valid={valids[guestInputs[2].name]}
-          />
+          <p className="mb-2 text-center">Hi {authUser?.username}</p>
+          {!user?.phoneNumber && (
+            <Input
+              {...guestInputs[2]}
+              key={guestInputs[2].id + 1}
+              ref={(ref: HTMLInputElement) => addInputRef(ref)}
+              valid={valids[guestInputs[2].name]}
+            />
+          )}
           <Input
             {...guestInputs[3]}
             key={guestInputs[3].id + 1}
@@ -228,11 +233,11 @@ export default function Booking() {
   }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className="background-image-w min-h-screen flex">
+      <div className="background-image-w min-h-screen py-8">
         {successfullyBooked ? (
           <SuccessBook />
         ) : (
-          <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-6 rounded">
+          <section className="shadow-around max-w-lg m-auto relativeshadow-2xl bg-white bg-opacity-70 p-0 rounded sm:p-6">
             <h1 className="text-3xl text-center">Book a table</h1>
             <form className="p-12 flex flex-col">
               {bookingForm()}

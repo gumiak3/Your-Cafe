@@ -49,7 +49,6 @@ export function ReservationsManagement() {
       ...timeOptions,
       [id]: newTimeOptions[id],
     });
-    console.log(newTimeOptions);
   }
 
   useEffect(() => {
@@ -123,7 +122,7 @@ export function ReservationsManagement() {
       headerName: "Status",
       flex: 1,
       type: "singleSelect",
-      valueOptions: ["Waiting", "Confirmed", "Canceled", "Finished"],
+      valueOptions: ["Waiting", "Confirmed", "Cancelled", "Finished"],
       editable: true,
       minWidth: 150,
     },
@@ -207,7 +206,11 @@ export function ReservationsManagement() {
         {userDetails ? (
           <Info
             row={["Username", "Email", "Phone"]}
-            col={[userDetails.username, userDetails.email, "500-400-300"]}
+            col={[
+              userDetails.username,
+              userDetails.email,
+              userDetails.phoneNumber || "000-000-000",
+            ]}
           />
         ) : null}
       </BasicModal>

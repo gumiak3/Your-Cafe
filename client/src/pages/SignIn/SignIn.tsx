@@ -14,6 +14,7 @@ import { SignInValidator } from "./SignInValidator";
 import { useNavigate } from "react-router-dom";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import { toast } from "react-toastify";
 export default function SignIn() {
   const inputRefs = useRef<HTMLInputElement[]>([]);
   const [valids, setValids] = useState<IValiidateLoginForm>({
@@ -38,8 +39,7 @@ export default function SignIn() {
   }
   useEffect(() => {
     if (isAuthenticated) {
-      // todo : redirect to profile page
-      navigate("/");
+      navigate("/Profile");
     }
   });
   async function handleClick(e: any) {
@@ -94,6 +94,9 @@ export default function SignIn() {
           },
         });
         // make a popup window which will notify a user about successful login in.
+        toast.success(`Successfully logged in!`, {
+          position: "top-center",
+        });
         navigate("/");
       } catch (err) {
         console.log(err);

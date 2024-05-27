@@ -15,4 +15,14 @@ export class DataConverter {
     });
     return newData;
   }
+  public convertDate(date: string) {
+    return new Date(date).toLocaleDateString("en-CA");
+  }
+  public convertToReadable(data: {}[]) {
+    const camelCaseData = this.convertToCamel(data);
+    return camelCaseData.map((item) => {
+      item.reservationDate = this.convertDate(item.reservationDate);
+      return item;
+    });
+  }
 }

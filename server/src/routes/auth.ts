@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { db } from "../server";
 import { User } from "../entities/user/User";
 import jwt from "jsonwebtoken";
+import { DataConverter } from "../entities/DataConverter";
 
 export const router = express.Router();
 
@@ -116,4 +117,25 @@ router.post("/refresh-token", (req, res) => {
     );
     return res.status(201).json({ auth: true, newToken });
   });
+});
+
+router.post("/get_user/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = await db.getUserById(Number(id));
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  return res.status(200).json(user);
+});
+
+router.post("/reservations", async (req, res) => {
+  const userId = Number(req.body.userId);
+  try {
+    const reservations = await db.getUserReservations(userId);
+    const dataConverter = new DataConverter();
+    const convertedReservations = dataConverter.convertToReadable(reservations);
+    return res.status(200).json(convertedReservations);
+  } catch (err) {
+    return res.status(500).json({ error: "Couldn't fetch reservations" });
+  }
 });

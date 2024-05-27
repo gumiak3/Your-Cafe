@@ -55,7 +55,6 @@ router.post("/update_reservation/:id", isAdmin, async (req, res) => {
 router.post("/get_user/:id", isAdmin, async (req, res) => {
   try {
     const user = await db.getUserById(Number(req.params.id));
-
     res.status(200).json({ message: "success", user: user });
   } catch (err) {
     return res.status(500).json({ message: err.message });

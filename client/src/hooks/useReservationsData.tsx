@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import useBookingHours from "./useBookingHours";
 
-type reservationType = {
+export type reservationType = {
   reservationId: number;
   userId: number;
   numberOfPeople: number;
@@ -23,7 +23,7 @@ export type convertedReservationType = {
   reservationDate: Date;
 };
 
-function convertData(data: reservationType[]) {
+export function convertData(data: reservationType[]) {
   const newData: convertedReservationType[] = [];
   data.forEach((item) => {
     item.reservationDate = new Date(item.reservationDate);

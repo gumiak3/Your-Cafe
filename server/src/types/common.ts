@@ -4,6 +4,7 @@ export interface IUser {
   password: string;
   email: string;
   type?: string;
+  phoneNumber?: string;
 }
 export interface IValidateForm {
   [key: string]: validateStatus;
@@ -26,4 +27,5 @@ export interface DatabaseUser {
   email: string;
   password_hash: string;
   type: string;
+  phone_number?: string;
 }
